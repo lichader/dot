@@ -1,0 +1,293 @@
+#!/usr/bin/env bash
+
+# Official repository packages are installed as root with pacman. AUR packages
+# are kept separate so the trust and build seam remains visible and all builds
+# happen as the target user.
+
+BOOTSTRAP_PACKAGES=(
+    base-devel
+    ca-certificates
+    curl
+    git
+    sudo
+    zsh
+)
+
+BASE_SYSTEM_PACKAGES=(
+    base
+    btrfs-progs
+    cronie
+    efibootmgr
+    gnupg
+    inetutils
+    iptables
+    linux
+    linux-firmware
+    linux-headers
+    man-db
+    man-pages
+    nano
+    openssh
+    pacman-contrib
+    procps-ng
+    stow
+    unrar
+    unzip
+    vim
+    wget
+    xdg-user-dirs
+    xdg-utils
+    zip
+    zram-generator
+)
+
+AMD_GRAPHICS_PACKAGES=(
+    amd-ucode
+    lact
+    lib32-mesa
+    lib32-vulkan-radeon
+    libva-utils
+    mesa
+    mesa-utils
+    rocm-smi-lib
+    rocminfo
+    vulkan-radeon
+    xf86-video-amdgpu
+)
+
+DESKTOP_FOUNDATION_PACKAGES=(
+    avahi
+    bluez
+    bluez-utils
+    blueman
+    brightnessctl
+    cups
+    cups-filters
+    greetd
+    greetd-tuigreet
+    gst-plugin-pipewire
+    iwd
+    libnotify
+    libpulse
+    libsecret
+    network-manager-applet
+    networkmanager
+    nss-mdns
+    pavucontrol
+    pipewire
+    pipewire-alsa
+    pipewire-jack
+    pipewire-pulse
+    playerctl
+    polkit-gnome
+    system-config-printer
+    wireplumber
+)
+
+HYPRLAND_PACKAGES=(
+    cliphist
+    fcitx5
+    fcitx5-chinese-addons
+    fcitx5-configtool
+    fcitx5-gtk
+    fcitx5-material-color
+    fcitx5-qt
+    fcitx5-rime
+    fortune-mod
+    ghostty
+    gnome-keyring
+    grim
+    hyprgraphics
+    hypridle
+    hyprland
+    hyprlock
+    hyprpaper
+    kvantum
+    mako
+    nwg-look
+    qt5-wayland
+    qt5ct
+    qt6ct
+    slurp
+    swappy
+    uwsm
+    waybar
+    wl-clipboard
+    wmenu
+    wofi
+    xdg-desktop-portal-gtk
+    xdg-desktop-portal-hyprland
+    xorg-xwayland
+)
+
+GUI_APPLICATION_PACKAGES=(
+    android-file-transfer
+    darktable
+    discord
+    filezilla
+    gimp
+    gnome-calculator
+    gvfs
+    gvfs-gphoto2
+    gvfs-smb
+    libreoffice-still
+    lutris
+    mtpfs
+    obs-studio
+    obsidian
+    openrgb
+    qbittorrent
+    ristretto
+    steam
+    telegram-desktop
+    thunar
+    thunar-volman
+    virt-manager
+    virt-viewer
+    visualvm
+    wezterm
+    zathura
+    zathura-cb
+    zathura-djvu
+    zathura-pdf-mupdf
+)
+
+CLI_PACKAGES=(
+    7zip
+    age
+    bat
+    bind
+    btop
+    chafa
+    distrobox
+    docker
+    docker-compose
+    eza
+    fastfetch
+    fd
+    ffmpeg
+    ffmpegthumbnailer
+    fzf
+    git-delta
+    github-cli
+    go
+    gphoto2
+    gping
+    htop
+    hugo
+    imagemagick
+    jq
+    k9s
+    lazydocker
+    lazygit
+    less
+    mpv
+    ncdu
+    neovim
+    pnpm
+    poppler
+    pyenv
+    python-pipx
+    rclone
+    resvg
+    ripgrep
+    rust
+    shellcheck
+    shfmt
+    socat
+    sqlite
+    starship
+    syncthing
+    television
+    tmux
+    tree
+    ueberzugpp
+    unison
+    uv
+    viu
+    yazi
+    yt-dlp
+    zoxide
+)
+
+VIRTUALIZATION_PACKAGES=(
+    dnsmasq
+    edk2-ovmf
+    guestfs-tools
+    libosinfo
+    libvirt
+    qemu-full
+    swtpm
+    tuned
+    v4l2loopback-dkms
+    virt-install
+)
+
+GAMING_PACKAGES=(
+    gamescope
+    goverlay
+    lib32-mangohud
+    mangohud
+)
+
+SYSTEM_UTILITY_PACKAGES=(
+    liquidctl
+    smartmontools
+    timeshift
+)
+
+AUR_PACKAGES=(
+    1password
+    catppuccin-gtk-theme-mocha
+    distroshelf
+    dropbox
+    eclipse-mat
+    fladder-git
+    google-chrome
+    heroic-games-launcher-bin
+    jetbrains-toolbox
+    liquibase
+    localsend-bin
+    opencode-bin
+    postman-bin
+    protonplus
+    rime-ice-git
+    slack-desktop
+    spotify
+    thorium-browser-bin
+    timewall-bin
+    trashy
+    visual-studio-code-bin
+    wayscriber-bin
+    wechat-appimage
+    winboat-bin
+    wlogout
+    worktrunk-bin
+    zen-browser-bin
+)
+
+OFFICIAL_PACKAGES=(
+    "${BASE_SYSTEM_PACKAGES[@]}"
+    "${AMD_GRAPHICS_PACKAGES[@]}"
+    "${DESKTOP_FOUNDATION_PACKAGES[@]}"
+    "${HYPRLAND_PACKAGES[@]}"
+    "${GUI_APPLICATION_PACKAGES[@]}"
+    "${CLI_PACKAGES[@]}"
+    "${VIRTUALIZATION_PACKAGES[@]}"
+    "${GAMING_PACKAGES[@]}"
+    "${SYSTEM_UTILITY_PACKAGES[@]}"
+)
+
+SYSTEM_SERVICES=(
+    NetworkManager.service
+    avahi-daemon.service
+    bluetooth.service
+    cronie.service
+    cups.service
+    docker.service
+    fstrim.timer
+    greetd.service
+    lactd.service
+    libvirtd.service
+    paccache.timer
+)

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Eclipse MAT
+Comment=Eclipse Memory Analyzer Tool (MAT), a toolkit for analyzing Java heap dumps.
+Exec=env GTK_THEME=Adwaita /usr/bin/eclipse-mat
+Icon=utilities-system-monitor
+Terminal=false
+Type=Application
+Categories=Development;

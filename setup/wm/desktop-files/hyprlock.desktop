@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Hyprlock
+Exec=hyprlock
+Icon=system-lock-screen
+Type=Application
+Categories=Utility;
+

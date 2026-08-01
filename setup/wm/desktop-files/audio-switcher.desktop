@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Audio Switcher
+Exec=/bin/bash -lc "~/.config/wofi/audio-switcher.sh"
+Type=Application
+Categories=AudioVideo;
