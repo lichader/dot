@@ -3,6 +3,15 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_FIXTURE=""
+
+cleanup() {
+    if [[ -n "$DOTFILES_FIXTURE" && -d "$DOTFILES_FIXTURE" ]]; then
+        rm -rf -- "$DOTFILES_FIXTURE"
+    fi
+}
+
+trap cleanup EXIT
 
 # shellcheck source=setup/lib/packages.sh
 source "$SCRIPT_DIR/lib/packages.sh"
@@ -62,5 +71,16 @@ fi
 
 printf 'Checking the public bootstrap interface...\n'
 "$SCRIPT_DIR/bootstrap.sh" --user "${SUDO_USER:-${USER:-lichader}}" --dry-run >/dev/null
+
+DOTFILES_FIXTURE="$(mktemp -d)"
+mkdir -p \
+    "$DOTFILES_FIXTURE/config" \
+    "$DOTFILES_FIXTURE/git" \
+    "$DOTFILES_FIXTURE/ideavim"
+"$SCRIPT_DIR/bootstrap.sh" \
+    --user "${SUDO_USER:-${USER:-lichader}}" \
+    --dotfiles-dir "$DOTFILES_FIXTURE" \
+    --dry-run \
+    >/dev/null
 
 printf 'Setup checks passed.\n'

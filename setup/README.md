@@ -1,10 +1,24 @@
 # Arch Hyprland bootstrap
 
-`bootstrap.sh` turns a minimal Arch installation into the workstation described
-by this repository. It has one supported interface and is safe to rerun:
+The public [`lichader/dot`](https://github.com/lichader/dot) repository turns a
+minimal Arch installation into this Hyprland workstation. It contains the
+bootstrap, package manifests, generated system configuration, and desktop
+entries. Personal dotfiles remain in the separate private `lichader/dot-files`
+repository and are not required to run the public bootstrap.
+
+The supported standalone interface is safe to rerun:
 
 ```bash
 ./setup/bootstrap.sh --user lichader
+```
+
+Pass an authenticated checkout of the private repository when personal
+dotfiles should also be deployed:
+
+```bash
+./setup/bootstrap.sh \
+    --user lichader \
+    --dotfiles-dir /home/lichader/dot-files
 ```
 
 The implementation installs only missing packages, checks before cloning or
@@ -23,20 +37,28 @@ arch-chroot /mnt
 ```
 
 Configure the locale, timezone, hostname, root password, and bootloader as part
-of the base Arch installation. Then fetch this repository over HTTPS and run
-the bootstrap as root:
+of the base Arch installation. Then fetch the public setup repository over
+HTTPS and run the bootstrap as root:
 
 ```bash
 pacman -Syu --needed git
 mkdir -p /home/lichader
-git clone https://github.com/lichader/dot-files.git /home/lichader/dot-files
-cd /home/lichader/dot-files
+git clone https://github.com/lichader/dot.git /home/lichader/dot
+cd /home/lichader/dot
 ./setup/bootstrap.sh --user lichader
 ```
 
 If the user does not exist, the bootstrap creates it, adds it to `wheel`, and
 prompts for its login password. A temporary sudo rule allows that non-root user
-to build AUR packages; the rule is removed on success or failure.
+to install packages through pacman while Paru and makepkg run; the rule is
+removed on success or failure.
+
+The public bootstrap deliberately does not fetch the private repository or
+handle GitHub credentials. If an authenticated checkout is already available,
+place it somewhere the target user can read (normally
+`/home/lichader/dot-files`) and pass it through `--dotfiles-dir`. A checkout
+created as root beneath the target user's home is reassigned to that user by
+the bootstrap.
 
 Use a dry run to inspect the planned mutations:
 
@@ -45,7 +67,7 @@ Use a dry run to inspect the planned mutations:
 ```
 
 Validate shell syntax, manifest invariants, current package availability, and
-the dry-run interface with:
+both forms of the dry-run interface with:
 
 ```bash
 ./setup/check.sh
@@ -63,7 +85,7 @@ the dry-run interface with:
 - NetworkManager with the iwd backend, Bluetooth, printing, Docker, libvirt,
   LACT, package-cache cleanup, and scheduled services
 - GUI, terminal, development, virtualization, gaming, and AUR applications
-- Repository dotfiles via GNU Stow
+- Optional private dotfiles via GNU Stow
 - NVM with the current Node LTS, SDKMAN with Java/Maven/Gradle, pipx tools, and
   Fabric
 
@@ -75,6 +97,10 @@ workstation profile.
 
 Official packages come from configured Arch repositories. AUR packages execute
 community-maintained `PKGBUILD` files as the daily user, with review prompts
-disabled for automation. Review `setup/lib/packages.sh` before running it on a
-new machine. NVM and SDKMAN use their upstream installers; their bootstrap
-versions and installed candidates are checked before rerunning.
+disabled for automation. Review `setup/lib/packages.sh` and `setup/fonts.sh`
+before running them on a new machine. NVM and SDKMAN use their upstream
+installers; their bootstrap versions and installed candidates are checked
+before rerunning.
+
+The private dotfiles repository is an independent trust boundary. This public
+bootstrap only reads it when its path is explicitly supplied.

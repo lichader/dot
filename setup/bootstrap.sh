@@ -14,19 +14,21 @@ DRY_RUN=false
 TARGET_USER="${SUDO_USER:-}"
 TARGET_HOME=""
 TARGET_GROUP=""
+DOTFILES_ROOT=""
 TEMP_SUDOERS=""
 PARU_BUILD_DIR=""
 
 usage() {
     cat <<'EOF'
-Usage: setup/bootstrap.sh [--user USERNAME] [--dry-run]
+Usage: setup/bootstrap.sh [--user USERNAME] [--dotfiles-dir PATH] [--dry-run]
 
 Bootstrap a minimal Arch installation into this Hyprland workstation.
 
 Options:
-  --user USERNAME  Existing or new daily user to configure
-  --dry-run        Print mutations without performing them
-  -h, --help       Show this help
+  --user USERNAME     Existing or new daily user to configure
+  --dotfiles-dir PATH Optional checkout containing config, git, and ideavim
+  --dry-run           Print mutations without performing them
+  -h, --help          Show this help
 
 Run as root from arch-chroot. If USERNAME does not exist, the bootstrap creates
 it and prompts once for its login password.
@@ -39,6 +41,11 @@ parse_arguments() {
             --user)
                 (($# >= 2)) || die "--user requires a username."
                 TARGET_USER="$2"
+                shift 2
+                ;;
+            --dotfiles-dir)
+                (($# >= 2)) || die "--dotfiles-dir requires a path."
+                DOTFILES_ROOT="$(realpath -m -- "$2")"
                 shift 2
                 ;;
             --dry-run)
@@ -82,6 +89,19 @@ infer_target_user() {
     fi
 
     die "Pass the daily account explicitly, for example: --user lichader"
+}
+
+validate_dotfiles_source() {
+    local package
+
+    [[ -n "$DOTFILES_ROOT" ]] || return 0
+    [[ -d "$DOTFILES_ROOT" ]] \
+        || die "Dotfiles directory does not exist: $DOTFILES_ROOT"
+
+    for package in config git ideavim; do
+        [[ -d "$DOTFILES_ROOT/$package" ]] \
+            || die "Dotfiles directory is missing the '$package' Stow package: $DOTFILES_ROOT"
+    done
 }
 
 enable_multilib() {
@@ -143,6 +163,12 @@ configure_target_user() {
     # writable by that user before Stow and future Git operations can use it.
     if [[ "$REPO_ROOT/" == "$TARGET_HOME/"* ]]; then
         run chown -R "$TARGET_USER:$TARGET_GROUP" "$REPO_ROOT"
+    fi
+
+    if [[ -n "$DOTFILES_ROOT" \
+        && "$DOTFILES_ROOT" != "$REPO_ROOT" \
+        && "$DOTFILES_ROOT/" == "$TARGET_HOME/"* ]]; then
+        run chown -R "$TARGET_USER:$TARGET_GROUP" "$DOTFILES_ROOT"
     fi
 }
 
@@ -257,15 +283,10 @@ session    optional     pam_gnome_keyring.so auto_start'
     done
 }
 
-deploy_dotfiles() {
+deploy_user_configuration() {
     local desktop_file
 
-    log "Deploying dotfiles with Stow"
-
-    if [[ "$DRY_RUN" != true ]] \
-        && ! as_target_user test -r "$REPO_ROOT/config/.config"; then
-        die "$TARGET_USER cannot read $REPO_ROOT; clone the repository beneath $TARGET_HOME."
-    fi
+    log "Deploying user configuration"
 
     ensure_directory "$TARGET_USER" "$TARGET_GROUP" 0755 "$TARGET_HOME/.config"
     ensure_directory "$TARGET_USER" "$TARGET_GROUP" 0755 "$TARGET_HOME/.cache/zsh"
@@ -273,16 +294,25 @@ deploy_dotfiles() {
     ensure_directory "$TARGET_USER" "$TARGET_GROUP" 0755 "$TARGET_HOME/.local/share/applications"
     ensure_directory "$TARGET_USER" "$TARGET_GROUP" 0755 "$TARGET_HOME/.local/state/zsh"
 
-    as_target_user stow \
-        --dir "$REPO_ROOT" \
-        --target "$TARGET_HOME" \
-        --restow \
-        --no-folding \
-        --ignore='^\.config/(aerospace|borders|karabiner|sketchybar|skhd|spacebar|yabai)(/|$)' \
-        --ignore='^\.config/zsh/\.zcompdump$' \
-        config git ideavim
+    if [[ -n "$DOTFILES_ROOT" ]]; then
+        if [[ "$DRY_RUN" != true ]] \
+            && ! as_target_user test -r "$DOTFILES_ROOT/config/.config"; then
+            die "$TARGET_USER cannot read $DOTFILES_ROOT; clone the private repository beneath $TARGET_HOME."
+        fi
 
-    ensure_git_include
+        as_target_user stow \
+            --dir "$DOTFILES_ROOT" \
+            --target "$TARGET_HOME" \
+            --restow \
+            --no-folding \
+            --ignore='^\.config/(aerospace|borders|karabiner|sketchybar|skhd|spacebar|yabai)(/|$)' \
+            --ignore='^\.config/zsh/\.zcompdump$' \
+            config git ideavim
+
+        ensure_git_include "$DOTFILES_ROOT"
+    else
+        printf '  No dotfiles directory supplied; skipping private dotfile deployment.\n'
+    fi
 
     for desktop_file in "$SCRIPT_DIR"/wm/desktop-files/*.desktop; do
         run install \
@@ -360,10 +390,12 @@ main() {
     require_arch
     require_root
     infer_target_user
+    validate_dotfiles_source
 
     log "Arch Hyprland workstation bootstrap"
     printf '  Repository: %s\n' "$REPO_ROOT"
     printf '  Target user: %s\n' "$TARGET_USER"
+    [[ -n "$DOTFILES_ROOT" ]] && printf '  Dotfiles: %s\n' "$DOTFILES_ROOT"
     [[ "$DRY_RUN" == true ]] && printf '  Mode: dry run\n'
 
     enable_multilib
@@ -373,7 +405,7 @@ main() {
     install_paru
     install_workstation_packages
     configure_system
-    deploy_dotfiles
+    deploy_user_configuration
 
     log "Installing and verifying fonts"
     as_target_user "$SCRIPT_DIR/fonts.sh"

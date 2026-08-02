@@ -131,8 +131,9 @@ ensure_directory() {
 }
 
 ensure_git_include() {
+    local dotfiles_root="$1"
     local gitconfig="$TARGET_HOME/.gitconfig"
-    local include_path="$REPO_ROOT/git/.gitconfig"
+    local include_path="$dotfiles_root/git/.gitconfig"
 
     if [[ "${DRY_RUN:-false}" == true ]]; then
         print_command git config --file "$gitconfig" include.path "$include_path"
