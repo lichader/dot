@@ -1,0 +1,36 @@
+[Default Applications]
+x-scheme-handler/slack=slack.desktop
+x-scheme-handler/http=google-chrome.desktop
+x-scheme-handler/https=google-chrome.desktop
+x-scheme-handler/chrome=google-chrome.desktop
+text/html=google-chrome.desktop
+application/x-extension-htm=google-chrome.desktop
+application/x-extension-html=google-chrome.desktop
+application/x-extension-shtml=google-chrome.desktop
+application/xhtml+xml=google-chrome.desktop
+application/x-extension-xhtml=google-chrome.desktop
+application/x-extension-xht=google-chrome.desktop
+x-scheme-handler/jetbrains=jetbrainsd.desktop
+x-scheme-handler/postman=Postman.desktop
+x-scheme-handler/about=google-chrome.desktop
+x-scheme-handler/unknown=google-chrome.desktop
+application/pdf=org.pwmt.zathura.desktop
+image/jpeg=org.xfce.ristretto.desktop
+image/png=org.xfce.ristretto.desktop
+image/gif=org.xfce.ristretto.desktop
+image/bmp=org.xfce.ristretto.desktop
+image/svg+xml=org.xfce.ristretto.desktop
+image/webp=org.xfce.ristretto.desktop
+image/heic=org.xfce.ristretto.desktop
+
+[Added Associations]
+x-scheme-handler/http=zen.desktop;
+x-scheme-handler/https=zen.desktop;
+text/html=zen.desktop;
+x-scheme-handler/chrome=zen.desktop;
+application/x-extension-htm=zen.desktop;
+application/x-extension-html=zen.desktop;
+application/x-extension-shtml=zen.desktop;
+application/xhtml+xml=zen.desktop;
+application/x-extension-xhtml=zen.desktop;
+application/x-extension-xht=zen.desktop;

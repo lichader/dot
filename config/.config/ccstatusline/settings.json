@@ -1,0 +1,115 @@
+{
+  "version": 3,
+  "lines": [
+    [
+      {
+        "id": "1",
+        "type": "model",
+        "color": "cyan"
+      },
+      {
+        "id": "7d5b7937-f8b1-4b2c-8d23-aa21b6d41d02",
+        "type": "separator"
+      },
+      {
+        "id": "c6083069-0cbc-46b3-86be-55486c66ed6d",
+        "type": "thinking-effort"
+      },
+      {
+        "id": "e8abe9ed-acac-410f-b287-f061df4c1206",
+        "type": "separator"
+      },
+      {
+        "id": "5",
+        "type": "git-branch",
+        "color": "magenta"
+      },
+      {
+        "id": "8a75c040-1372-414b-a20e-d3d04a997997",
+        "type": "separator"
+      },
+      {
+        "id": "7",
+        "type": "git-changes",
+        "color": "yellow"
+      }
+    ],
+    [
+      {
+        "id": "5cdf4adc-bb70-4a37-a79d-0589d0839a65",
+        "type": "session-name"
+      },
+      {
+        "id": "5c6896dc-b427-411d-bb55-8f4ee016c352",
+        "type": "separator"
+      },
+      {
+        "id": "dd63004d-3391-4287-9f4b-a14d5a169494",
+        "type": "tokens-cached"
+      },
+      {
+        "id": "48127e73-1861-408d-8522-782faf2748fb",
+        "type": "separator"
+      },
+      {
+        "id": "4b5970b4-866a-4212-942e-f1ed1d238042",
+        "type": "context-bar"
+      }
+    ],
+    [
+      {
+        "id": "29fc3e6f-df0e-4885-80df-f8e05a64be20",
+        "type": "session-usage"
+      },
+      {
+        "id": "7f5d2670-e7cf-4eb7-a4e1-96d0909d72c2",
+        "type": "separator"
+      },
+      {
+        "id": "396dc0e3-ed20-4262-8e3b-28651e5e2f7e",
+        "type": "block-timer"
+      },
+      {
+        "id": "8fa2fec9-7a00-456e-9e7f-5b0fb26901f9",
+        "type": "reset-timer"
+      },
+      {
+        "id": "ab1aa258-4bd6-4103-bd36-f9647cc20340",
+        "type": "separator"
+      },
+      {
+        "id": "741008be-dfc4-4cc1-9d9c-bc16b2df386f",
+        "type": "weekly-usage"
+      },
+      {
+        "id": "68a3220f-67ba-4435-adb6-771bd5e62e83",
+        "type": "separator"
+      },
+      {
+        "id": "61f8c9bf-147f-4949-be26-e8e297408e06",
+        "type": "weekly-reset-timer"
+      }
+    ]
+  ],
+  "flexMode": "full-minus-40",
+  "compactThreshold": 60,
+  "colorLevel": 2,
+  "defaultPadding": " ",
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "minimalistMode": false,
+  "powerline": {
+    "enabled": false,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "theme": "nord-aurora",
+    "autoAlign": false,
+    "continueThemeAcrossLines": false
+  }
+}

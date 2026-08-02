@@ -1,0 +1,138 @@
+set ideajoin
+
+
+" Plugins
+
+Plug 'tpope/vim-surround'
+set surround
+
+Plugin 'tpope/vim-commentary'
+set commentary
+
+Plug 'machakann/vim-highlightedyank'
+set highlightedyank
+
+Plug 'easymotion/vim-easymotion'
+set easymotion
+
+set quickscope
+
+set clipboard=unnamedplus
+set keep-english-in-normal
+
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
+set relativenumber number
+set cursorline
+set showmatch
+
+" https://github.com/JetBrains/ideavim/blob/master/doc/ideajoin-examples.md
+set ideajoin
+
+" Quicker window movement
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+
+nmap ge <action>(GotoNextError)
+nmap gt <action>(GotoTest)
+nmap gm <action>(MethodUp)
+
+nmap <C-g> <action>(SelectInProjectView)
+nmap <C-b> <action>(CompileDirty)
+nmap <C-r> <action>(Run)
+
+" Overwrite the vim navigation because IDE is better"
+nmap <C-o> <action>(Back)
+nmap <C-i> <action>(Forward)
+
+let mapleader=" "
+
+" Go to recent file
+nmap <leader>fu <action>(RecentFiles)
+
+" Search all the files by name
+nmap <leader>ff <action>(GotoFile)
+
+" Like the live grep in telescope
+nmap <leader>fl <action>(FindInPath)
+
+" GotoClass
+nmap <leader>fc <action>(GotoClass)
+
+" GoToAction
+nmap <leader>ca <action>(GotoAction)
+
+" Go to implementation
+nmap <leader>fi <action>(GotoImplementation)
+
+" File structure popout
+nmap <leader>ft <action>(FileStructurePopup)
+
+" Type hierarchy popout"
+nmap <leader>fh <action>(TypeHierarchy)
+
+nmap <leader>mw <action>(HideAllWindows)
+
+" ChooseRunConfiguration
+nmap <leader>rc <action>(ChooseRunConfiguration)
+
+" ChooseDebugConfiguration
+nmap <leader>dc <action>(ChooseDebugConfiguration)
+
+" Setup debug breakpoint
+nmap <leader>db <action>(ToggleLineBreakpoint)
+
+" Debug resume
+nmap <leader>dr <action>(Resume)
+
+" Debug step over
+nmap <leader>ds <action>(StepOver)
+
+" Debug evaluate expression
+nmap <leader>dv <action>(EvaluateExpression)
+
+" Run to cursor
+nmap <leader>dr <action>(RunToCursor)
+
+" RunClass
+nmap <leader>rl <action>(RunClass)
+
+" DebugClass
+nmap <leader>dl <action>(DebugClass)
+
+" pin tab
+nmap <leader>tp <action>(PinActiveEditorTab)
+
+" Close other tabs
+nmap <leader>tw <action>(CloseAllEditorsButActive)
+
+" Move editor to opposite tab group
+nmap <leader>tm <action>(MoveEditorToOppositeTabGroup)
+
+" Close tab
+nmap <leader>tt <action>(CloseContent)
+
+" Git blame on current file
+nmap <leader>gb <action>(Annotate)
+
+" Git rollback current line
+nmap <leader>gr <action>(Vcs.RollbackChangedLines)
+
+" Show intention actions
+nmap <leader>la <action>(ShowIntentionActions)
+
+" Rename Element
+nmap <leader>ln <action>(RenameElement)
+
+" Copilot chat
+nmap <leader>av <action>(copilot.chat.show)
+
+" Open new class menu
+nmap <leader>cn <action>(NewClass)
+
+nmap <leader>cg <action>(Generate)

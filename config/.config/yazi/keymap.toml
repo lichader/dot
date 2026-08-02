@@ -1,0 +1,29 @@
+[[mgr.prepend_keymap]]
+on   = [ "g", "o" ]
+run  = "cd ~/Dropbox"
+desc = "CD to ~/Dropbox"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "c" ]
+run  = "cd ~/Developer/vintrace/"
+desc = "CD to Code"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "n" ]
+run  = "cd ~/Dropbox/Work/"
+desc = "CD to Work notes"
+
+
+[[mgr.prepend_keymap]]
+on  = "y"
+run = [ "yank", 'plugin clipboard -- --action=copy' ]
+
+[[mgr.prepend_keymap]]
+on   = "<C-t>"
+run  = "shell --orphan 'ghostty --working-directory=\"$0\"' --confirm"
+desc = "Open Ghostty in current directory"
+
+[[mgr.prepend_keymap]]
+on   = "<C-e>"
+run  = "shell --orphan 'thunar .'"
+desc = "Open Thunar in current directory"

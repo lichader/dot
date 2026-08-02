@@ -1,0 +1,14 @@
+root = /Users/lichader/Library/Mobile Documents/iCloud~md~obsidian/Documents
+root = /Users/lichader/Library/CloudStorage/Dropbox/New_Files/09 - Wiki/Obsidian
+
+# Machine-specific files
+ignore = Name .DS_Store
+ignore = Name workspace.json
+ignore = Name workspace-mobile.json
+
+# Plugin runtime state - prefer Dropbox version on conflict
+preferpartial = Path */.obsidian/plugins/notebook-navigator/data.json -> /Users/lichader/Library/CloudStorage/Dropbox/New_Files/09 - Wiki/Obsidian
+
+auto = true
+batch = true
+repeat = watch

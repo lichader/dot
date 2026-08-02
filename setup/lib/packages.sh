@@ -198,7 +198,6 @@ CLI_PACKAGES=(
     sqlite
     starship
     syncthing
-    television
     tmux
     tree
     ueberzugpp

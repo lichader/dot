@@ -1,0 +1,30 @@
+[mgr]
+show_hidden = true
+show_symlink = true
+linemode = "size_and_mtime"
+
+# sort_by = "mtime"
+# sort_reverse = true
+
+[preview]
+# wrap = true
+
+
+[opener]
+video = [
+  { run = 'mpv "$@"', orphan = true, desc = "Play with mpv" }
+]
+audio = [
+  { run = 'mpv "$@"', orphan = true, desc = "Play audio with mpv" }
+]
+
+
+[open]
+"mp4" = "video"
+"mkv" = "video"
+"avi" = "video"
+"mov" = "video"
+"flv" = "video"
+"mp3" = "audio"
+"flac" = "audio"
+"wav" = "audio"

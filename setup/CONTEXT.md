@@ -9,14 +9,15 @@ runnable instructions in [`README.md`](README.md).
 
 The public repository should turn a minimal, vanilla Arch Linux installation
 into the workstation's Arch and Hyprland foundation with one repeatable
-command. Personal configuration is kept in the separate private
-`lichader/dot-files` repository and can be deployed from an authenticated local
-checkout. The public bootstrap does not fetch that repository or manage GitHub
-credentials.
+command. The public `config` Stow package supplies the Linux desktop and shared
+application configuration, including IdeaVim's XDG configuration. Private Git
+settings remain in the separate `lichader/dot-files` repository and can be
+deployed from an authenticated local checkout. The public bootstrap does not
+fetch that repository or manage GitHub credentials.
 
-`setup/bootstrap.sh` intentionally supports Arch Linux only. Cross-platform and
-macOS dotfiles belong to the private repository rather than this public setup
-repository.
+`setup/bootstrap.sh` intentionally supports Arch Linux only. The public config
+package may contain cross-platform and macOS application settings, but the
+Linux bootstrap excludes macOS-only configuration while Stowing it.
 
 The active Linux desktop stack is Hyprland. Sway, KDE/Plasma, SDDM, and their
 related package/configuration sets are intentionally excluded.
@@ -26,14 +27,15 @@ related package/configuration sets are intentionally excluded.
 The two repositories have distinct responsibilities:
 
 - `lichader/dot` is public. It owns the bootstrap scripts, package manifests,
-  generated system configuration, validation, and non-secret desktop entries.
-- `lichader/dot-files` is private. It owns personal Stow packages, application
-  configuration, shell and Git configuration, wallpapers, and macOS support.
+  generated system configuration, validation, wallpapers, and the `config`
+  Stow package for shell, desktop, editor, and application configuration.
+- `lichader/dot-files` is private. It retains the personal `git` Stow package
+  and any configuration that should not be published.
 
-The public bootstrap works without the private repository. Supplying
-`--dotfiles-dir PATH` opts into Stowing the `config`, `git`, and `ideavim`
-packages from that checkout. The path must already exist and be readable; the
-bootstrap deliberately performs no authenticated clone.
+The public bootstrap always Stows its local `config` package. Supplying
+`--dotfiles-dir PATH` additionally Stows the `git` package from the private
+checkout. The path must already exist and be readable; the bootstrap
+deliberately performs no authenticated clone.
 
 ## Installation workflow
 
@@ -89,7 +91,7 @@ System work runs as root:
 User-scoped work runs as the account passed through `--user`:
 
 - Building Paru and AUR packages
-- Stowing private dotfiles when `--dotfiles-dir` is supplied
+- Stowing the public config and optional private Git package
 - Installing NVM, Node LTS, SDKMAN candidates, pipx tools, Fabric, Codex, and
   GitHub Copilot CLI
 - Updating user directories and fonts
@@ -137,9 +139,8 @@ Hyprlock password authentication and application secret storage are separate:
   `libsecret` supplies the client API used by applications.
 - The bootstrap generates `/etc/pam.d/greetd` with
   `pam_gnome_keyring.so` authentication and `auto_start` session hooks.
-- When the private dotfiles are deployed, their Hyprland autostart completes
-  initialization of the keyring daemon's `secrets` component after the
-  graphical session and D-Bus are available.
+- The public Hyprland autostart completes initialization of the keyring daemon's
+  `secrets` component after the graphical session and D-Bus are available.
 
 The GNOME login keyring password should match the Linux login password so the
 tuigreet login unlocks it automatically. KDE Wallet is not installed or needed.
@@ -154,31 +155,36 @@ tuigreet login unlocks it automatically. KDE Wallet is not installed or needed.
   include is absent.
 - Generated system files are replaced only when their content differs.
 - Services are enabled only when not already enabled.
-- Stow uses `--restow` for explicitly supplied private dotfile packages.
+- Stow uses `--restow` for the public config and supplied private packages.
 - Temporary build directories and sudo rules are cleaned on exit.
 
 The bootstrap may still stop on a genuine conflict, such as an existing user
 file that GNU Stow cannot safely replace or an unavailable/failed AUR build.
 
-## Private configuration portability
+## Cross-platform configuration
 
-Machine-specific home paths, macOS configuration, wallpapers, and generated Zsh
-completion dumps are concerns of the private repository. The public bootstrap
-must refer to the private checkout only through the path supplied with
-`--dotfiles-dir`; it must not duplicate or publish private configuration.
+Tracked public configuration must not contain machine-specific home paths when
+a portable alternative exists. The Linux bootstrap excludes macOS-only config
+directories from Stow, wallpapers use home-relative paths, and generated Zsh
+completion dumps and backup Hyprland configuration are ignored.
+
+The public bootstrap must refer to the private checkout only through the path
+supplied with `--dotfiles-dir`; it must not duplicate or publish private Git
+configuration.
 
 ## Security and repository hygiene
 
 Do not commit credentials, tokens, private keys, private hostnames, generated
-machine state, private dotfiles, wallpapers, or local agent configuration to
-this public repository.
+machine state, private dotfiles, or local agent configuration to this public
+repository. Public wallpapers must be checked for sensitive metadata before
+they are committed.
 
 AUR packages execute community-maintained `PKGBUILD` files. The main AUR
 manifest in `setup/lib/packages.sh` and the font-specific AUR handling in
 `setup/fonts.sh` should both remain explicit and reviewable.
 
-The private dotfiles checkout is trusted input. The public bootstrap validates
-its expected Stow package structure but does not audit or publish its contents.
+The private checkout is trusted input. The public bootstrap validates its
+expected Git Stow package structure but does not audit or publish its contents.
 
 ## Validation
 
@@ -191,8 +197,11 @@ git diff --check
 
 `setup/check.sh` validates shell syntax, runs ShellCheck when available, checks
 package-list invariants and official package availability, checks AUR
-availability when Paru is installed, and exercises dry runs with and without a
-private dotfiles directory.
+availability when Paru is installed, checks that the public config package is
+present, and exercises dry runs with and without a private dotfiles directory.
 
-Private Neovim configuration should be validated from an authenticated checkout
-of `lichader/dot-files`; it is not part of this repository's public validation.
+For public Neovim changes, also run:
+
+```bash
+nvim --headless -u config/.config/nvim/init.lua +qa
+```

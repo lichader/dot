@@ -35,6 +35,9 @@ if command -v shellcheck >/dev/null 2>&1; then
 fi
 
 printf 'Checking package manifest invariants...\n'
+[[ -d "$SCRIPT_DIR/../config/.config" ]] \
+    || fail "public config Stow package is missing"
+
 duplicates="$(
     printf '%s\n' "${BOOTSTRAP_PACKAGES[@]}" "${OFFICIAL_PACKAGES[@]}" "${AUR_PACKAGES[@]}" \
         | sort \
@@ -73,10 +76,7 @@ printf 'Checking the public bootstrap interface...\n'
 "$SCRIPT_DIR/bootstrap.sh" --user "${SUDO_USER:-${USER:-lichader}}" --dry-run >/dev/null
 
 DOTFILES_FIXTURE="$(mktemp -d)"
-mkdir -p \
-    "$DOTFILES_FIXTURE/config" \
-    "$DOTFILES_FIXTURE/git" \
-    "$DOTFILES_FIXTURE/ideavim"
+mkdir -p "$DOTFILES_FIXTURE/git"
 "$SCRIPT_DIR/bootstrap.sh" \
     --user "${SUDO_USER:-${USER:-lichader}}" \
     --dotfiles-dir "$DOTFILES_FIXTURE" \
