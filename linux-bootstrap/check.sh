@@ -13,7 +13,7 @@ cleanup() {
 
 trap cleanup EXIT
 
-# shellcheck source=setup/lib/packages.sh
+# shellcheck source=linux-bootstrap/lib/packages.sh
 source "$SCRIPT_DIR/lib/packages.sh"
 
 fail() {

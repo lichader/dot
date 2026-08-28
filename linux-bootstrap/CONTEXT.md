@@ -2,7 +2,7 @@
 
 This document records the decisions and operating assumptions for the public
 workstation bootstrap in [`lichader/dot`](https://github.com/lichader/dot) as of
-2026-08-02. It is context for future maintenance, not a replacement for the
+2026-08-28. It is context for future maintenance, not a replacement for the
 runnable instructions in [`README.md`](README.md).
 
 ## Goal
@@ -15,9 +15,9 @@ settings remain in the separate `lichader/dot-files` repository and can be
 deployed from an authenticated local checkout. The public bootstrap does not
 fetch that repository or manage GitHub credentials.
 
-`setup/bootstrap.sh` intentionally supports Arch Linux only. The public config
-package may contain cross-platform and macOS application settings, but the
-Linux bootstrap excludes macOS-only configuration while Stowing it.
+`linux-bootstrap/bootstrap.sh` intentionally supports Arch Linux only. The
+public config package may contain cross-platform and macOS application settings,
+but the Linux bootstrap excludes macOS-only configuration while Stowing it.
 
 The active Linux desktop stack is Hyprland. Sway, KDE/Plasma, SDDM, and their
 related package/configuration sets are intentionally excluded.
@@ -56,14 +56,14 @@ pacman -Syu --needed git
 mkdir -p /home/lichader
 git clone https://github.com/lichader/dot.git /home/lichader/dot
 cd /home/lichader/dot
-./setup/bootstrap.sh --user lichader
+./linux-bootstrap/bootstrap.sh --user lichader
 ```
 
 For the maintainer's personalized installation, first make an authenticated
 checkout of the private repository available, then pass it explicitly:
 
 ```bash
-./setup/bootstrap.sh \
+./linux-bootstrap/bootstrap.sh \
     --user lichader \
     --dotfiles-dir /home/lichader/dot-files
 ```
@@ -73,7 +73,7 @@ Always pass the intended daily account with `--user`; root must not become the
 desktop account. A dry run is available before making changes:
 
 ```bash
-./setup/bootstrap.sh --user lichader --dry-run
+./linux-bootstrap/bootstrap.sh --user lichader --dry-run
 ```
 
 If either repository was cloned as root beneath the target user's home, the
@@ -92,8 +92,8 @@ User-scoped work runs as the account passed through `--user`:
 
 - Building Paru and AUR packages
 - Stowing the public config and optional private Git package
-- Installing NVM, Node LTS, SDKMAN candidates, pipx tools, Fabric, Codex, and
-  GitHub Copilot CLI
+- Installing NVM, Node LTS, SDKMAN candidates, pipx tools, Fabric, Codex,
+  GitHub Copilot CLI, and the pinned Herdr navigation plugin
 - Updating user directories and fonts
 
 A temporary sudoers rule permits the target user to invoke only pacman while
@@ -104,18 +104,21 @@ They start after reboot.
 
 ## Desktop and hardware profile
 
-The main package manifest is organized by concern in `setup/lib/packages.sh`
-and targets an AMD workstation. Font packages and their reviewed fallback logic
-live in `setup/fonts.sh`. Together they include:
+The main package manifest is organized by concern in
+`linux-bootstrap/lib/packages.sh` and targets an AMD workstation. Font packages
+and their reviewed fallback logic live in `linux-bootstrap/fonts.sh`. Together
+they include:
 
 - AMD microcode, Mesa, Radeon Vulkan/VA-API support, and monitoring tools
 - Hyprland, Hyprlock, Hypridle, Hyprpaper, Waybar, Wofi, portals, and UWSM
 - PipeWire/WirePlumber, NetworkManager with iwd, Bluetooth, printing, a polkit
   agent, Docker, libvirt, gaming packages, and workstation applications
-- Zsh, Paru, Neovim, development tools, fonts, and user-scoped language tools
+- Zsh, Paru, Neovim, Herdr, development tools, fonts, and user-scoped language
+  tools
 
-Sway and KDE package names are rejected by `setup/check.sh`. Hardware-specific
-Intel, Nouveau, and VMware graphics packages are outside this profile.
+Sway and KDE package names are rejected by `linux-bootstrap/check.sh`.
+Hardware-specific Intel, Nouveau, and VMware graphics packages are outside this
+profile.
 
 ## Login manager
 
@@ -147,7 +150,7 @@ tuigreet login unlocks it automatically. KDE Wallet is not installed or needed.
 
 ## Idempotency expectations
 
-`setup/bootstrap.sh` is designed to be safe to rerun:
+`linux-bootstrap/bootstrap.sh` is designed to be safe to rerun:
 
 - Pacman and Paru use `--needed`.
 - Existing users, Paru, SDKMAN, NVM, pipx packages, and user tools are detected.
@@ -180,8 +183,8 @@ repository. Public wallpapers must be checked for sensitive metadata before
 they are committed.
 
 AUR packages execute community-maintained `PKGBUILD` files. The main AUR
-manifest in `setup/lib/packages.sh` and the font-specific AUR handling in
-`setup/fonts.sh` should both remain explicit and reviewable.
+manifest in `linux-bootstrap/lib/packages.sh` and the font-specific AUR handling
+in `linux-bootstrap/fonts.sh` should both remain explicit and reviewable.
 
 The private checkout is trusted input. The public bootstrap validates its
 expected Git Stow package structure but does not audit or publish its contents.
@@ -191,14 +194,15 @@ expected Git Stow package structure but does not audit or publish its contents.
 Before committing public setup changes, run:
 
 ```bash
-./setup/check.sh
+./linux-bootstrap/check.sh
 git diff --check
 ```
 
-`setup/check.sh` validates shell syntax, runs ShellCheck when available, checks
-package-list invariants and official package availability, checks AUR
-availability when Paru is installed, checks that the public config package is
-present, and exercises dry runs with and without a private dotfiles directory.
+`linux-bootstrap/check.sh` validates shell syntax, runs ShellCheck when
+available, checks package-list invariants and official package availability,
+checks AUR availability when Paru is installed, checks that the public config
+package is present, and exercises dry runs with and without a private dotfiles
+directory.
 
 For public Neovim changes, also run:
 

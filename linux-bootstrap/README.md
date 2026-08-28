@@ -10,14 +10,14 @@ public bootstrap.
 The supported standalone interface is safe to rerun:
 
 ```bash
-./setup/bootstrap.sh --user lichader
+./linux-bootstrap/bootstrap.sh --user lichader
 ```
 
 Pass an authenticated checkout of the private repository when its Git package
 should also be deployed:
 
 ```bash
-./setup/bootstrap.sh \
+./linux-bootstrap/bootstrap.sh \
     --user lichader \
     --dotfiles-dir /home/lichader/dot-files
 ```
@@ -46,7 +46,7 @@ pacman -Syu --needed git
 mkdir -p /home/lichader
 git clone https://github.com/lichader/dot.git /home/lichader/dot
 cd /home/lichader/dot
-./setup/bootstrap.sh --user lichader
+./linux-bootstrap/bootstrap.sh --user lichader
 ```
 
 If the user does not exist, the bootstrap creates it, adds it to `wheel`, and
@@ -65,14 +65,14 @@ the bootstrap.
 Use a dry run to inspect the planned mutations:
 
 ```bash
-./setup/bootstrap.sh --user lichader --dry-run
+./linux-bootstrap/bootstrap.sh --user lichader --dry-run
 ```
 
 Validate shell syntax, manifest invariants, current package availability, and
 both forms of the dry-run interface with:
 
 ```bash
-./setup/check.sh
+./linux-bootstrap/check.sh
 ```
 
 ## What it configures
@@ -89,6 +89,7 @@ both forms of the dry-run interface with:
 - GUI, terminal, development, virtualization, gaming, and AUR applications
 - Public application and desktop configuration via GNU Stow
 - Optional private Git configuration via GNU Stow
+- Herdr with the pinned Vim/Neovim pane-navigation plugin
 - NVM with the current Node LTS, SDKMAN with Java/Maven/Gradle, pipx tools, and
   Fabric
 
@@ -100,10 +101,10 @@ workstation profile.
 
 Official packages come from configured Arch repositories. AUR packages execute
 community-maintained `PKGBUILD` files as the daily user, with review prompts
-disabled for automation. Review `setup/lib/packages.sh` and `setup/fonts.sh`
-before running them on a new machine. NVM and SDKMAN use their upstream
-installers; their bootstrap versions and installed candidates are checked
-before rerunning.
+disabled for automation. Review `linux-bootstrap/lib/packages.sh` and
+`linux-bootstrap/fonts.sh` before running them on a new machine. NVM and SDKMAN
+use their upstream installers; their bootstrap versions and installed
+candidates are checked before rerunning.
 
 The private repository is an independent trust boundary. This public bootstrap
 only reads its Git package when its path is explicitly supplied.

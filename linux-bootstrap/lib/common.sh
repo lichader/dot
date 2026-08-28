@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Shared implementation for the Arch workstation bootstrap. This file is
-# sourced by setup/bootstrap.sh and is not a public entrypoint.
+# sourced by linux-bootstrap/bootstrap.sh and is not a public entrypoint.
 
 log() {
     printf '\n\033[1;34m==>\033[0m %s\n' "$*"

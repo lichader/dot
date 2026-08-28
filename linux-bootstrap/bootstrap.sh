@@ -5,9 +5,9 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 
-# shellcheck source=setup/lib/common.sh
+# shellcheck source=linux-bootstrap/lib/common.sh
 source "$SCRIPT_DIR/lib/common.sh"
-# shellcheck source=setup/lib/packages.sh
+# shellcheck source=linux-bootstrap/lib/packages.sh
 source "$SCRIPT_DIR/lib/packages.sh"
 
 DRY_RUN=false
@@ -20,7 +20,7 @@ PARU_BUILD_DIR=""
 
 usage() {
     cat <<'EOF'
-Usage: setup/bootstrap.sh [--user USERNAME] [--dotfiles-dir PATH] [--dry-run]
+Usage: linux-bootstrap/bootstrap.sh [--user USERNAME] [--dotfiles-dir PATH] [--dry-run]
 
 Bootstrap a minimal Arch installation into this Hyprland workstation.
 
@@ -397,6 +397,43 @@ install_user_tools() {
     as_target_user xdg-user-dirs-update
 }
 
+install_herdr_plugins() {
+    local plugin_id="vim-herdr-navigation"
+    local plugin_source="paulbkim-dev/vim-herdr-navigation"
+    local plugin_ref="79679dacc791f70fc34de8b29a3cf9706c0f5b2f"
+    local plugins_json
+
+    log "Installing Herdr plugins"
+
+    if [[ "$DRY_RUN" == true ]]; then
+        as_target_user herdr plugin install \
+            "$plugin_source" \
+            --ref "$plugin_ref" \
+            --yes
+        return 0
+    fi
+
+    plugins_json="$(as_target_user herdr plugin list --plugin "$plugin_id" --json)"
+    if ! jq -e --arg id "$plugin_id" \
+        '.result.plugins | any(.plugin_id == $id)' \
+        <<<"$plugins_json" >/dev/null; then
+        as_target_user herdr plugin install \
+            "$plugin_source" \
+            --ref "$plugin_ref" \
+            --yes
+        return 0
+    fi
+
+    if jq -e --arg id "$plugin_id" \
+        '.result.plugins | any(.plugin_id == $id and .enabled)' \
+        <<<"$plugins_json" >/dev/null; then
+        printf '  Herdr plugin %s is already installed and enabled.\n' "$plugin_id"
+        return 0
+    fi
+
+    as_target_user herdr plugin enable "$plugin_id"
+}
+
 main() {
     parse_arguments "$@"
     require_arch
@@ -423,6 +460,7 @@ main() {
     as_target_user "$SCRIPT_DIR/fonts.sh"
 
     install_user_tools
+    install_herdr_plugins
 
     log "Bootstrap complete"
     printf 'Reboot into the installed system and select Hyprland in greetd.\n'

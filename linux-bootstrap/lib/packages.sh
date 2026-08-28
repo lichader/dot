@@ -198,6 +198,7 @@ CLI_PACKAGES=(
     sqlite
     starship
     syncthing
+    television
     tmux
     tree
     ueberzugpp
@@ -243,6 +244,7 @@ AUR_PACKAGES=(
     eclipse-mat
     fladder-git
     google-chrome
+    herdr-bin
     heroic-games-launcher-bin
     jetbrains-toolbox
     liquibase
