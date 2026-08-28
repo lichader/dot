@@ -226,6 +226,7 @@ configure_system() {
     local greetd_config
     local greetd_pam
     local zram_config
+    local zram_sysctl
 
     log "Configuring system files"
 
@@ -264,8 +265,15 @@ session    include      system-local-login
 session    optional     pam_gnome_keyring.so auto_start'
     install_text_file /etc/pam.d/greetd 0644 "$greetd_pam"
 
-    zram_config='[zram0]'
+    zram_config='[zram0]
+zram-size = min(ram / 2, 16 * 1024)
+compression-algorithm = zstd
+swap-priority = 100'
     install_text_file /etc/systemd/zram-generator.conf 0644 "$zram_config"
+
+    zram_sysctl='vm.swappiness = 150
+vm.page-cluster = 0'
+    install_text_file /etc/sysctl.d/99-zram.conf 0644 "$zram_sysctl"
 
     run usermod --append --groups docker,libvirt "$TARGET_USER"
 

@@ -89,6 +89,8 @@ both forms of the dry-run interface with:
   user's login password
 - NetworkManager with the iwd backend, Bluetooth, printing, Docker, libvirt,
   LACT, package-cache cleanup, and scheduled services
+- Zstd-compressed Zram swap sized to half of system memory with a 16 GiB cap,
+  plus virtual-memory tuning for in-memory swap
 - GUI, terminal, development, virtualization, gaming, and AUR applications
 - Public application and desktop configuration via GNU Stow
 - Optional private Git configuration via GNU Stow
