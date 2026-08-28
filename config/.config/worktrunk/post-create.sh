@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-REPO="$1"
-WORKTREE_PATH="$2"
+set -euo pipefail
 
-if [ "$REPO" = "vintrace-server" ]; then
+REPO="${1:?usage: post-create.sh REPO WORKTREE_PATH}"
+WORKTREE_PATH="${2:?usage: post-create.sh REPO WORKTREE_PATH}"
+
+if [[ "$REPO" == "vintrace-server" ]]; then
     "$HOME/Dropbox/Work/githooks/post-checkout" "$WORKTREE_PATH"
 fi

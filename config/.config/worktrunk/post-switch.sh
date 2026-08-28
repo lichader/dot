@@ -1,54 +1,78 @@
 #!/usr/bin/env bash
-BRANCH="$1"
-WORKTREE_PATH="$2"
+set -euo pipefail
 
-REPO_NAME="$(basename "$(dirname "$(git -C "$WORKTREE_PATH" rev-parse --git-common-dir)")")"
-PARENT_FOLDER="$(basename "$(dirname "$WORKTREE_PATH")")"
+BRANCH="${1:?usage: post-switch.sh BRANCH WORKTREE_PATH PRIMARY_WORKTREE_PATH}"
+WORKTREE_PATH="${2:?usage: post-switch.sh BRANCH WORKTREE_PATH PRIMARY_WORKTREE_PATH}"
+PRIMARY_WORKTREE_PATH="${3:?usage: post-switch.sh BRANCH WORKTREE_PATH PRIMARY_WORKTREE_PATH}"
 
-# If branch has a slash, use part after first slash; otherwise use full branch name
-if [[ "$BRANCH" == *"/"* ]]; then
-    BRANCH_NAME="${BRANCH#*/}"
-else
-    BRANCH_NAME="$BRANCH"
+if [[ "${HERDR_ENV:-}" != "1" ]]; then
+    printf 'Not running inside Herdr; skipping workspace setup for %s\n' "$WORKTREE_PATH" >&2
+    exit 0
 fi
 
-# Truncate branch part to 20 chars, then prefix with repo name
-BRANCH_NAME="${BRANCH_NAME:0:20}"
-SESSION_NAME="${REPO_NAME} - ${BRANCH_NAME}"
+if ! command -v herdr >/dev/null 2>&1; then
+    printf 'herdr is required to create the workspace\n' >&2
+    exit 127
+fi
 
-if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
-    tmux switch-client -t "$SESSION_NAME"
-else
-    # Determine AI command based on parent folder
-    case "$PARENT_FOLDER" in
-        rpeng)    AI_CMD="codex" ;;
-        vintrace) AI_CMD="claude --dangerously-skip-permissions" ;;
-    esac
+if ! command -v jq >/dev/null 2>&1; then
+    printf 'jq is required to create the Herdr workspace\n' >&2
+    exit 127
+fi
 
-    # Create new detached session with first window "code"
-    # Layout: AI tool (full left pane) | neovim (top right) / lazygit (bottom right)
-    tmux new-session -d -s "$SESSION_NAME" -n "code" -c "$WORKTREE_PATH"
-    tmux send-keys -t "$SESSION_NAME:code" "$AI_CMD" Enter
-    tmux split-window -t "$SESSION_NAME:code" -h -p 70 -c "$WORKTREE_PATH"
-    tmux send-keys -t "$SESSION_NAME:code" "nvim" Enter
-    tmux split-window -t "$SESSION_NAME:code" -v -c "$WORKTREE_PATH"
-    tmux send-keys -t "$SESSION_NAME:code" "lazygit" Enter
+# The parent workspace already provides repository context, so keep the
+# distinctive final component of the branch as the child workspace label.
+WORKSPACE_LABEL="${BRANCH##*/}"
 
-    # Second window "database" — runs docker ps
-    tmux new-window -t "$SESSION_NAME" -n "database" -c "$WORKTREE_PATH"
-    tmux send-keys -t "$SESSION_NAME:database" "docker ps" Enter
+OPEN_RESULT="$(herdr worktree open \
+    --cwd "$PRIMARY_WORKTREE_PATH" \
+    --path "$WORKTREE_PATH" \
+    --label "$WORKSPACE_LABEL" \
+    --no-focus)"
 
-    # Fourth window "misc"
-    tmux new-window -t "$SESSION_NAME" -n "misc" -c "$WORKTREE_PATH"
-    if [ -f "$WORKTREE_PATH/package.json" ] && grep -q '"next"' "$WORKTREE_PATH/package.json"; then
-        SOURCE_REPO="$(dirname "$(git -C "$WORKTREE_PATH" rev-parse --git-common-dir)")"
-        if [ -f "$SOURCE_REPO/.env.local" ]; then
-            cp "$SOURCE_REPO/.env.local" "$WORKTREE_PATH/.env.local"
-        fi
-        tmux send-keys -t "$SESSION_NAME:misc" "pnpm install && pnpm dev" Enter
+WORKSPACE_ID="$(jq -er '.result.workspace.workspace_id' <<<"$OPEN_RESULT")"
+CODE_TAB_ID="$(jq -er '.result.tab.tab_id' <<<"$OPEN_RESULT")"
+AI_PANE_ID="$(jq -er '.result.root_pane.pane_id' <<<"$OPEN_RESULT")"
+ALREADY_OPEN="$(jq -r '.result.already_open' <<<"$OPEN_RESULT")"
+
+if [[ "$ALREADY_OPEN" == "true" ]]; then
+    herdr workspace focus "$WORKSPACE_ID" >/dev/null
+    exit 0
+fi
+
+# Layout: Claude (left pane) | Neovim (right pane).
+herdr tab rename "$CODE_TAB_ID" code >/dev/null
+
+NVIM_RESULT="$(herdr pane split "$AI_PANE_ID" \
+    --direction right \
+    --cwd "$WORKTREE_PATH" \
+    --no-focus)"
+NVIM_PANE_ID="$(jq -er '.result.pane.pane_id' <<<"$NVIM_RESULT")"
+
+DATABASE_RESULT="$(herdr tab create \
+    --workspace "$WORKSPACE_ID" \
+    --cwd "$WORKTREE_PATH" \
+    --label database \
+    --no-focus)"
+DATABASE_PANE_ID="$(jq -er '.result.root_pane.pane_id' <<<"$DATABASE_RESULT")"
+
+MISC_RESULT="$(herdr tab create \
+    --workspace "$WORKSPACE_ID" \
+    --cwd "$WORKTREE_PATH" \
+    --label misc \
+    --no-focus)"
+MISC_PANE_ID="$(jq -er '.result.root_pane.pane_id' <<<"$MISC_RESULT")"
+
+herdr pane run "$AI_PANE_ID" claude >/dev/null
+herdr pane run "$NVIM_PANE_ID" nvim >/dev/null
+herdr pane run "$DATABASE_PANE_ID" "docker ps" >/dev/null
+
+if [[ -f "$WORKTREE_PATH/package.json" ]] && grep -q '"next"' "$WORKTREE_PATH/package.json"; then
+    if [[ -f "$PRIMARY_WORKTREE_PATH/.env.local" ]]; then
+        cp "$PRIMARY_WORKTREE_PATH/.env.local" "$WORKTREE_PATH/.env.local"
     fi
-
-    # Focus the AI pane (left) and switch to session
-    tmux select-pane -t "$SESSION_NAME:code.0"
-    tmux switch-client -t "$SESSION_NAME:code"
+    herdr pane run "$MISC_PANE_ID" "pnpm install && pnpm dev" >/dev/null
 fi
+
+# The no-focus creation calls leave the code tab and AI pane selected.
+herdr workspace focus "$WORKSPACE_ID" >/dev/null

@@ -3,12 +3,12 @@ skip-commit-generation-prompt = true
 cd = false
 
 [post-start]
-bootstrap = "~/.config/worktrunk/post-create.sh '{{ repo }}' '{{ worktree_path }}'"
+bootstrap = "~/.config/worktrunk/post-create.sh {{ repo }} {{ worktree_path }}"
 
 [post-remove]
-tmux = "~/.config/worktrunk/post-remove.sh '{{ branch }}' '{{ repo }}'"
+herdr = "~/.config/worktrunk/post-remove.sh {{ worktree_path }}"
 
 [post-switch]
-tmux = "~/.config/worktrunk/post-switch.sh '{{ branch }}' '{{ worktree_path }}'"
+herdr = "~/.config/worktrunk/post-switch.sh {{ branch }} {{ worktree_path }} {{ primary_worktree_path }}"
 
 [projects]

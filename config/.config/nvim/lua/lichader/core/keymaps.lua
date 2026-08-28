@@ -7,12 +7,6 @@ vim.g.mapleader = " "
 map("n", "<C-s>", ":w<CR>", opts)
 map("n", "<C-S-s", ":wa<CR>", opts)
 
--- Better window navigation
-map("n", "<C-h>", "<C-w>h", opts)
-map("n", "<C-j>", "<C-w>j", opts)
-map("n", "<C-k>", "<C-w>k", opts)
-map("n", "<C-l>", "<C-w>l", opts)
-
 map("n", "<leader>1", ":BufferLineGoToBuffer 1<CR>", opts)
 map("n", "<leader>2", ":BufferLineGoToBuffer 2<CR>", opts)
 map("n", "<leader>3", ":BufferLineGoToBuffer 3<CR>", opts)

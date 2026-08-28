@@ -1,0 +1,7 @@
+# Herdr runtime and machine-local state
+/.plugins.lock
+/*.log
+/*.sock
+/plugins/
+/plugins.json
+/session.json
