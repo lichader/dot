@@ -4,7 +4,7 @@ run  = "cd ~/Dropbox"
 desc = "CD to ~/Dropbox"
 
 [[mgr.prepend_keymap]]
-on   = [ "g", "c" ]
+on   = [ "g", "v" ]
 run  = "cd ~/Developer/vintrace/"
 desc = "CD to Code"
 
