@@ -37,8 +37,7 @@ hl.bind(modShift .. " + Q", hl.dsp.exec_cmd("google-chrome-stable --app=https://
 hl.bind(modShift .. " + E", hl.dsp.exec_cmd("google-chrome-stable --app=https://www.reddit.com"))
 hl.bind(modShift .. " + X", hl.dsp.exec_cmd("google-chrome-stable --app=https://x.com/home"))
 hl.bind(modShift .. " + W", hl.dsp.exec_cmd("google-chrome-stable --app=https://excalidraw.com/"))
-hl.bind(modShift .. " + I", hl.dsp.exec_cmd("google-chrome-stable --app=https://instapaper.com/u"))
-hl.bind(modShift .. " + O", hl.dsp.exec_cmd("google-chrome-stable --app=https://www.rednote.com/explore"))
+hl.bind(modShift .. " + O", hl.dsp.exec_cmd("google-chrome-stable --app=http://mynas.local:9070/unread"))
 hl.bind(modShift .. " + Y", hl.dsp.exec_cmd("google-chrome-stable --app=https://www.youtube.com"))
 
 ----------------------------------------------------------------------

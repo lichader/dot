@@ -33,7 +33,7 @@ hl.window_rule({ match = { class = "^(com.vysp3r.ProtonPlus)$" }, workspace = "5
 
 -- Comms / notes
 hl.window_rule({ match = { class = "(?i)slack" }, workspace = "6" })
-hl.window_rule({ match = { class = "^(obsidian)$" }, workspace = "7" })
+hl.window_rule({ match = { class = "^(md.obsidian.Obsidian)$" }, workspace = "7" })
 
 hl.window_rule({ match = { class = "^(discord)$" }, workspace = "8" })
 hl.window_rule({ match = { class = "^(org.telegram.desktop)$" }, workspace = "8" })
@@ -63,7 +63,7 @@ hl.window_rule({
 })
 
 -- Keep the Obsidian web clipper able to surface the window.
-hl.window_rule({ match = { class = "^(obsidian)$" }, focus_on_activate = true })
+hl.window_rule({ match = { class = "^(md.obsidian.Obsidian)$" }, focus_on_activate = true })
 
 ----------------------------------------------------------------------
 -- Floating windows
