@@ -6,6 +6,7 @@ local progs = require("lua/programs")
 local mod = "SUPER"
 local modShift = "SUPER + SHIFT"
 local modAlt = "SUPER + ALT"
+local noctaliaIpc = "noctalia msg "
 
 ----------------------------------------------------------------------
 -- Open apps
@@ -14,14 +15,15 @@ hl.bind(mod .. " + T", hl.dsp.exec_cmd(progs.terminal))
 hl.bind(mod .. " + E", hl.dsp.exec_cmd(progs.file_manager))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd(progs.browser))
 hl.bind(mod .. " + Y", hl.dsp.exec_cmd(progs.task_manager))
-hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | wofi -S dmenu | cliphist decode | wl-copy"))
+hl.bind(mod .. " + V", hl.dsp.exec_cmd(noctaliaIpc .. "panel-toggle clipboard"))
 
 hl.bind(modShift .. " + C", hl.dsp.window.close())
 hl.bind(modShift .. " + F", hl.dsp.window.float({ action = "toggle" }))
+hl.bind("CTRL + ALT + L", hl.dsp.exec_cmd(noctaliaIpc .. "session lock"))
 
 -- 1 = maximize (vs full fullscreen)
 hl.bind(modShift .. " + M", hl.dsp.window.fullscreen({ mode = 1 }))
-hl.bind(modShift .. " + N", hl.dsp.exec_cmd("wlogout"))
+hl.bind(modShift .. " + N", hl.dsp.exec_cmd(noctaliaIpc .. "panel-toggle session"))
 
 ----------------------------------------------------------------------
 -- Screenshots / overlay
@@ -53,7 +55,10 @@ hl.bind(modAlt .. " + j", hl.dsp.window.move({ into_group = "d" }))
 ----------------------------------------------------------------------
 -- Launcher / layout
 ----------------------------------------------------------------------
-hl.bind(mod .. " + space", hl.dsp.exec_cmd(progs.menu))
+hl.bind(mod .. " + space", hl.dsp.exec_cmd(noctaliaIpc .. "panel-toggle launcher"))
+hl.bind(mod .. " + S", hl.dsp.exec_cmd(noctaliaIpc .. "panel-toggle control-center"))
+hl.bind(mod .. " + comma", hl.dsp.exec_cmd(noctaliaIpc .. "settings-toggle"))
+hl.bind("ALT + TAB", hl.dsp.exec_cmd(noctaliaIpc .. "window-switcher"))
 hl.bind(mod .. " + P", hl.dsp.window.pseudo())
 
 ----------------------------------------------------------------------
@@ -107,24 +112,24 @@ end)
 ----------------------------------------------------------------------
 hl.bind(
 	"XF86AudioRaiseVolume",
-	hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh up"),
+	hl.dsp.exec_cmd(noctaliaIpc .. "volume-up"),
 	{ locked = true, repeating = true }
 )
 hl.bind(
 	"XF86AudioLowerVolume",
-	hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh down"),
+	hl.dsp.exec_cmd(noctaliaIpc .. "volume-down"),
 	{ locked = true, repeating = true }
 )
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume.sh mute"), { locked = true, repeating = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd(noctaliaIpc .. "volume-mute"), { locked = true, repeating = true })
 hl.bind(
 	"XF86AudioMicMute",
-	hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),
+	hl.dsp.exec_cmd(noctaliaIpc .. "mic-mute"),
 	{ locked = true, repeating = true }
 )
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl s 10%+"), { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl s 10%-"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(noctaliaIpc .. "brightness-up"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(noctaliaIpc .. "brightness-down"), { locked = true, repeating = true })
 
-hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
-hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
+hl.bind("XF86AudioNext", hl.dsp.exec_cmd(noctaliaIpc .. "media next"), { locked = true })
+hl.bind("XF86AudioPause", hl.dsp.exec_cmd(noctaliaIpc .. "media toggle"), { locked = true })
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd(noctaliaIpc .. "media toggle"), { locked = true })
+hl.bind("XF86AudioPrev", hl.dsp.exec_cmd(noctaliaIpc .. "media previous"), { locked = true })

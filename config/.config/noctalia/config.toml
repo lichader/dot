@@ -1,0 +1,175 @@
+# Noctalia replaces the bar, launcher, notification daemon, wallpaper daemon,
+# clipboard UI, session menu, media OSD, and Polkit authentication agent.
+
+[bar.default]
+center = ["group:g1"]
+end = ["tray", "notifications", "network", "bluetooth", "volume", "control-center", "session"]
+scale = 1.25
+start = ["group:g2", "media"]
+thickness = 40
+
+[[bar.default.capsule_group]]
+accordion = false
+accordion_direction = "end"
+enabled = true
+fill = "surface_variant"
+id = "g1"
+members = ["date", "clock"]
+opacity = 1.0
+padding = 6.0
+
+[[bar.default.capsule_group]]
+accordion = false
+accordion_direction = "end"
+enabled = true
+fill = "surface_variant"
+id = "g2"
+members = ["launcher", "wallpaper", "workspaces"]
+opacity = 1.0
+padding = 6.0
+
+[brightness]
+enable_ddcutil = true
+
+# Noctalia owns idle handling as well as the lock screen. The screen-off action
+# replaces the old brightnessctl rule, which did not control the DDC displays.
+[idle]
+behavior_order = ["lock", "screen-off", "lock-and-suspend"]
+pre_action_fade_seconds = 2.0
+
+[idle.behavior.lock]
+action = "lock"
+enabled = true
+timeout = 300
+
+[idle.behavior.lock-and-suspend]
+action = "lock_and_suspend"
+enabled = true
+timeout = 3600
+
+[idle.behavior.screen-off]
+action = "screen_off"
+enabled = true
+timeout = 1200
+
+[location]
+auto_locate = true
+
+[lockscreen]
+enabled = true
+lock_before_suspend = true
+
+[lockscreen_widgets]
+enabled = true
+schema_version = 2
+widget_order = ["lockscreen-login-box@HDMI-A-1", "lockscreen-login-box@DP-1"]
+
+[lockscreen_widgets.grid]
+cell_size = 16
+major_interval = 4
+visible = true
+
+[lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+box_height = 196.0
+box_width = 810.0
+cx = 1536.0
+cy = 1546.0
+output = "DP-1"
+placement_height = 1728.0
+placement_width = 3072.0
+rotation = 0.0
+type = "login_box"
+
+[lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
+background_color = "surface_variant"
+background_opacity = 0.88
+background_radius = 12.0
+center_password_text = false
+input_opacity = 1.0
+input_radius = 6.0
+layout = "regular"
+show_caps_lock = true
+show_keyboard_layout = true
+show_login_button = true
+show_media = true
+show_session_buttons = true
+show_unlock_hint = true
+show_weather = true
+
+[lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1"]
+box_height = 196.0
+box_width = 810.0
+cx = 864.0
+cy = 2890.0
+output = "HDMI-A-1"
+placement_height = 3072.0
+placement_width = 1728.0
+rotation = 0.0
+type = "login_box"
+
+[lockscreen_widgets.widget."lockscreen-login-box@HDMI-A-1".settings]
+background_color = "surface_variant"
+background_opacity = 0.88
+background_radius = 12.0
+center_password_text = false
+input_opacity = 1.0
+input_radius = 6.0
+layout = "regular"
+show_caps_lock = true
+show_keyboard_layout = true
+show_login_button = true
+show_media = true
+show_session_buttons = true
+show_unlock_hint = true
+show_weather = true
+
+[nightlight]
+enabled = true
+temperature_day = 6000
+temperature_night = 5600
+
+[notification]
+enable_daemon = true
+
+[shell]
+polkit_agent = true
+
+[shell.screen_corners]
+enabled = true
+
+[shell.session]
+grid = true
+grid_columns = 5
+
+[theme]
+community_palette = "Gruvbox Material Hard"
+source = "community"
+wallpaper_scheme = "soft"
+
+[wallpaper]
+directory = "~/.config/hypr/wallpapers/tree"
+enabled = true
+
+[wallpaper.default]
+path = "~/.config/hypr/wallpapers/tree/Rancho_Cucamonga_Tree_6K.png"
+
+[wallpaper.last]
+path = "~/.config/hypr/wallpapers/tree/Rancho_Cucamonga_Tree_6K.png"
+
+[wallpaper.monitors.DP-1]
+path = "~/.config/hypr/wallpapers/tree/Rancho_Cucamonga_Tree_6K.png"
+
+[wallpaper.monitors.HDMI-A-1]
+path = "~/.config/hypr/wallpapers/tree/Rancho_Cucamonga_Tree_6K.png"
+
+[widget.media]
+capsule = true
+
+[widget.network]
+show_label = false
+
+[widget.tray]
+capsule = true
+
+[widget.volume]
+show_label = false

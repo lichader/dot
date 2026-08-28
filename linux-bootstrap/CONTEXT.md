@@ -110,9 +110,9 @@ and their reviewed fallback logic live in `linux-bootstrap/fonts.sh`. Together
 they include:
 
 - AMD microcode, Mesa, Radeon Vulkan/VA-API support, and monitoring tools
-- Hyprland, Hyprlock, Hypridle, Hyprpaper, Waybar, Wofi, portals, and UWSM
-- PipeWire/WirePlumber, NetworkManager with iwd, Bluetooth, printing, a polkit
-  agent, Docker, libvirt, gaming packages, and workstation applications
+- Hyprland, Noctalia, portals, UWSM, screenshot tools, and input methods
+- PipeWire/WirePlumber, NetworkManager with iwd, Bluetooth, printing, Docker,
+  libvirt, gaming packages, and workstation applications
 - Zsh, Paru, Neovim, Herdr, development tools, fonts, and user-scoped language
   tools
 
@@ -132,18 +132,25 @@ username, and remembers the selected session per user. On the first login,
 select Hyprland from the session menu with `F3`. Keeping the selector provides a
 recovery path instead of hardcoding Hyprland. Automatic login is not enabled.
 
-## Hyprlock and encrypted secrets
+## Noctalia and encrypted secrets
 
-Hyprlock password authentication and application secret storage are separate:
+Noctalia owns the desktop shell layer: bar, launcher, notifications, wallpaper,
+clipboard history, media and brightness controls, idle handling, session lock,
+session actions, NetworkManager and Bluetooth interfaces, and the graphical
+polkit agent. The corresponding standalone shell applications are deliberately
+excluded from the package manifest and public configuration.
 
-- The official Arch `hyprlock` package supplies `/etc/pam.d/hyprlock` and uses
-  the normal PAM login stack. Hyprlock does not require a desktop wallet.
+Noctalia's session lock and application secret storage are separate:
+
 - `gnome-keyring` supplies the Secret Service backend and PAM module;
   `libsecret` supplies the client API used by applications.
 - The bootstrap generates `/etc/pam.d/greetd` with
   `pam_gnome_keyring.so` authentication and `auto_start` session hooks.
 - The public Hyprland autostart completes initialization of the keyring daemon's
   `secrets` component after the graphical session and D-Bus are available.
+- Noctalia supplies the NetworkManager secret agent and stores credentials
+  through the Secret Service backend, so Wi-Fi passwords remain encrypted and
+  available after login.
 
 The GNOME login keyring password should match the Linux login password so the
 tuigreet login unlocks it automatically. KDE Wallet is not installed or needed.

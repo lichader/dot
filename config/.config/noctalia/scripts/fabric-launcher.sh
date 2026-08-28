@@ -2,9 +2,6 @@
 
 set -u
 
-readonly WOFI_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/wofi/config"
-readonly WOFI_STYLE="${XDG_CONFIG_HOME:-$HOME/.config}/wofi/style.css"
-
 notify_error() {
     if command -v notify-send >/dev/null 2>&1; then
         notify-send --urgency=critical "Fabric launcher" "$1"
@@ -22,40 +19,36 @@ is_youtube_url() {
     [[ "$1" =~ ^https?://([^/]+\.)?(youtube\.com|youtube-nocookie\.com|youtu\.be)(/|$) ]]
 }
 
-prompt_for_url() {
-    local url
+run_fabric() {
+    local pattern="$1"
+    local url="$2"
 
-    while true; do
-        url="$(wofi \
-            --dmenu \
-            --exec-search \
-            --prompt "YouTube URL" \
-            --conf "$WOFI_CONFIG" \
-            --style "$WOFI_STYLE" \
-            </dev/null)" || return 1
-
-        if is_youtube_url "$url"; then
-            printf '%s\n' "$url"
-            return 0
+    while ! is_youtube_url "$url"; do
+        read -r -p "YouTube URL: " url || exit 0
+        if ! is_youtube_url "$url"; then
+            printf 'Enter a valid YouTube URL.\n' >&2
         fi
-
-        notify_error "Enter a valid YouTube URL"
     done
+
+    exec fabric \
+        --pattern "$pattern" \
+        --stream \
+        --youtube "$url"
 }
+
+if [[ "${1:-}" == "--run" ]]; then
+    shift
+    run_fabric "$@"
+fi
 
 require_command fabric
 require_command ghostty
-require_command wofi
+require_command noctalia
 
 selection="$(printf '%s\n' \
     "Summarize" \
     "Extract wisdom" \
-    | wofi \
-        --dmenu \
-        --insensitive \
-        --prompt "Fabric pattern" \
-        --conf "$WOFI_CONFIG" \
-        --style "$WOFI_STYLE")" || exit 0
+    | noctalia dmenu --prompt "Fabric pattern")" || exit 0
 
 case "$selection" in
     "Summarize")
@@ -77,16 +70,10 @@ if command -v wl-paste >/dev/null 2>&1; then
     fi
 fi
 
-if [[ -z "$url" ]]; then
-    url="$(prompt_for_url)" || exit 0
-fi
-
-fabric_bin="$(command -v fabric)"
-
 exec ghostty \
     --title="Fabric: $selection" \
     --wait-after-command=true \
-    -e "$fabric_bin" \
-        --pattern "$pattern" \
-        --stream \
-        --youtube "$url"
+    -e "${BASH_SOURCE[0]}" \
+        --run \
+        "$pattern" \
+        "$url"

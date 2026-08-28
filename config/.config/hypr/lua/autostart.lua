@@ -31,19 +31,9 @@ hl.on("hyprland.start", function()
 	}, " && ")
 	hl.exec_cmd(hyprland_session_target)
 
-	-- Bars / applets / daemons
-	hl.exec_cmd("waybar")
-	hl.exec_cmd("nm-applet")
-	hl.exec_cmd("blueman-applet")
-	hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
+	-- Desktop shell / applets / daemons
+	hl.exec_cmd("noctalia")
 	hl.exec_cmd("dropbox")
-	-- hypridle runs under systemd so `systemctl --user restart hypridle` cleanly reloads config.
-	-- This session doesn't reach graphical-session.target, so start it explicitly here after
-	-- importing WAYLAND_DISPLAY (the unit has ConditionEnvironment=WAYLAND_DISPLAY).
-	hl.exec_cmd(
-		"systemctl --user import-environment WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE && systemctl --user restart hypridle"
-	)
-	hl.exec_cmd("hyprpaper")
 	hl.exec_cmd("dbus-update-activation-environment --systemd --all")
 	-- wayscriber runs under systemd so `systemctl --user restart wayscriber` cleanly reloads it.
 	-- Started explicitly here since this session doesn't reach graphical-session.target.
@@ -53,10 +43,6 @@ hl.on("hyprland.start", function()
 
 	-- Input method
 	hl.exec_cmd("fcitx5 -d")
-
-	-- Clipboard history
-	hl.exec_cmd("wl-paste --type text  --watch cliphist store")
-	hl.exec_cmd("wl-paste --type image --watch cliphist store")
 
 	-- Wi-Fi / keyring
 	hl.exec_cmd("/usr/bin/gnome-keyring-daemon --start --components=secrets")

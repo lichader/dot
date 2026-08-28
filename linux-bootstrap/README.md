@@ -79,8 +79,11 @@ both forms of the dry-run interface with:
 
 - Full system upgrade, multilib, Git, sudo, Zsh, and Paru bootstrap
 - Linux firmware and AMD CPU/GPU Mesa, Vulkan, VA-API, and monitoring tools
-- Hyprland, portals, PipeWire, WirePlumber, notifications, launcher, lock and
-  idle tools, screenshots, clipboard history, input methods, and a polkit agent
+- Hyprland and Noctalia, with Noctalia providing the bar, launcher,
+  notifications, wallpaper, clipboard history, idle handling, session lock,
+  media controls, network and Bluetooth interfaces, and a polkit agent
+- Portals, PipeWire, WirePlumber, screenshots, input methods, and brightness
+  controls, including DDC support for external monitors
 - Greetd/Tuigreet as the login manager
 - GNOME Keyring secret storage, unlocked through the Greetd PAM login using the
   user's login password

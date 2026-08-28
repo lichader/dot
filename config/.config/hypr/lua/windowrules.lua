@@ -7,16 +7,16 @@
 ----------------------------------------------------------------------
 -- Workspace -> monitor pinning
 ----------------------------------------------------------------------
-hl.workspace_rule({ workspace = "1", monitor = "DP-1" })
-hl.workspace_rule({ workspace = "2", monitor = "DP-1" })
-hl.workspace_rule({ workspace = "3", monitor = "DP-1" })
-hl.workspace_rule({ workspace = "4", monitor = "DP-1" })
-hl.workspace_rule({ workspace = "5", monitor = "DP-1" })
-hl.workspace_rule({ workspace = "6", monitor = "HDMI-A-1" })
-hl.workspace_rule({ workspace = "7", monitor = "HDMI-A-1" })
-hl.workspace_rule({ workspace = "8", monitor = "HDMI-A-1" })
-hl.workspace_rule({ workspace = "9", monitor = "HDMI-A-1" })
-hl.workspace_rule({ workspace = "10", monitor = "HDMI-A-1" })
+hl.workspace_rule({ workspace = "1", monitor = "DP-1", persistent = true })
+hl.workspace_rule({ workspace = "2", monitor = "DP-1", persistent = true })
+hl.workspace_rule({ workspace = "3", monitor = "DP-1", persistent = true })
+hl.workspace_rule({ workspace = "4", monitor = "DP-1", persistent = true })
+hl.workspace_rule({ workspace = "5", monitor = "DP-1", persistent = true })
+hl.workspace_rule({ workspace = "6", monitor = "HDMI-A-1", persistent = true })
+hl.workspace_rule({ workspace = "7", monitor = "HDMI-A-1", persistent = true })
+hl.workspace_rule({ workspace = "8", monitor = "HDMI-A-1", persistent = true })
+hl.workspace_rule({ workspace = "9", monitor = "HDMI-A-1", persistent = true })
+hl.workspace_rule({ workspace = "10", monitor = "HDMI-A-1", persistent = true })
 
 ----------------------------------------------------------------------
 -- App -> workspace assignment
@@ -69,6 +69,13 @@ hl.window_rule({ match = { class = "^(md.obsidian.Obsidian)$" }, focus_on_activa
 -- Floating windows
 ----------------------------------------------------------------------
 hl.window_rule({
+	name = "Noctalia Settings",
+	match = { class = "dev.noctalia.Noctalia" },
+	float = true,
+	size = { 1080, 920 },
+})
+
+hl.window_rule({
 	name = "Battle Net",
 	match = { class = "^steam_app_default$", title = "^Battle.net$" },
 	float = true,
@@ -117,4 +124,18 @@ hl.window_rule({
 	no_initial_focus = true,
 	size = { "monitor_w*0.2", "monitor_h*0.4" },
 	move = { "monitor_w*0.78", "monitor_h*0.58" },
+})
+
+----------------------------------------------------------------------
+-- Noctalia shell surfaces
+----------------------------------------------------------------------
+hl.layer_rule({
+	name = "noctalia",
+	match = {
+		namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd|window-switcher)$",
+	},
+	no_anim = true,
+	ignore_alpha = 0.5,
+	blur = true,
+	blur_popups = true,
 })

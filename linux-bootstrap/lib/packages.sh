@@ -59,10 +59,10 @@ DESKTOP_FOUNDATION_PACKAGES=(
     avahi
     bluez
     bluez-utils
-    blueman
     brightnessctl
     cups
     cups-filters
+    ddcutil
     greetd
     greetd-tuigreet
     gst-plugin-pipewire
@@ -70,22 +70,17 @@ DESKTOP_FOUNDATION_PACKAGES=(
     libnotify
     libpulse
     libsecret
-    network-manager-applet
     networkmanager
     nss-mdns
-    pavucontrol
     pipewire
     pipewire-alsa
     pipewire-jack
     pipewire-pulse
-    playerctl
-    polkit-gnome
     system-config-printer
     wireplumber
 )
 
 HYPRLAND_PACKAGES=(
-    cliphist
     fcitx5
     fcitx5-chinese-addons
     fcitx5-configtool
@@ -98,23 +93,18 @@ HYPRLAND_PACKAGES=(
     gnome-keyring
     grim
     hyprgraphics
-    hypridle
     hyprland
-    hyprlock
-    hyprpaper
     kvantum
-    mako
+    noctalia
     nwg-look
     qt5-wayland
     qt5ct
+    qt6-wayland
     qt6ct
     slurp
     swappy
     uwsm
-    waybar
     wl-clipboard
-    wmenu
-    wofi
     xdg-desktop-portal-gtk
     xdg-desktop-portal-hyprland
     xorg-xwayland
@@ -262,7 +252,6 @@ AUR_PACKAGES=(
     wayscriber-bin
     wechat-appimage
     winboat-bin
-    wlogout
     worktrunk-bin
     zen-browser-bin
 )
