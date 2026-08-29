@@ -9,6 +9,8 @@ REPO_ROOT="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 source "$SCRIPT_DIR/lib/common.sh"
 # shellcheck source=linux-bootstrap/lib/packages.sh
 source "$SCRIPT_DIR/lib/packages.sh"
+# shellcheck source=lib/shared-packages.sh
+source "$REPO_ROOT/lib/shared-packages.sh"
 
 DRY_RUN=false
 TARGET_USER="${SUDO_USER:-}"
@@ -212,11 +214,18 @@ install_paru() {
 }
 
 install_workstation_packages() {
+    local shared_aur_packages=()
+    local shared_official_packages=()
+
+    validate_shared_package_manifest
+    mapfile -t shared_official_packages < <(shared_arch_pacman_packages)
+    mapfile -t shared_aur_packages < <(shared_arch_aur_packages)
+
     log "Installing official workstation packages"
-    pacman_install "${OFFICIAL_PACKAGES[@]}"
+    pacman_install "${OFFICIAL_PACKAGES[@]}" "${shared_official_packages[@]}"
 
     log "Installing configured workstation packages from the AUR"
-    paru_install "${AUR_PACKAGES[@]}"
+    paru_install "${AUR_PACKAGES[@]}" "${shared_aur_packages[@]}"
 }
 
 configure_system() {

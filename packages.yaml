@@ -1,0 +1,549 @@
+# Applications and command-line tools intentionally installed on both Arch
+# Linux and macOS. Platform-specific packages belong in their platform's
+# bootstrap manifest instead of this file.
+schema: 1
+
+packages:
+  age:
+    type: cli
+    arch:
+      pacman: [age]
+    macos:
+      brew:
+        formula: [age]
+
+  bat:
+    type: cli
+    arch:
+      pacman: [bat]
+    macos:
+      brew:
+        formula: [bat]
+
+  bitwarden:
+    type: app
+    arch:
+      pacman: [bitwarden]
+    macos:
+      brew:
+        cask: [bitwarden]
+
+  btop:
+    type: cli
+    arch:
+      pacman: [btop]
+    macos:
+      brew:
+        formula: [btop]
+
+  discord:
+    type: app
+    arch:
+      pacman: [discord]
+    macos:
+      brew:
+        cask: [discord]
+
+  docker:
+    type: app
+    arch:
+      pacman: [docker, docker-compose]
+    macos:
+      brew:
+        cask: [docker]
+
+  dropbox:
+    type: app
+    arch:
+      aur: [dropbox]
+    macos:
+      brew:
+        cask: [dropbox]
+
+  eclipse-memory-analyzer:
+    type: app
+    arch:
+      aur: [eclipse-mat]
+    macos:
+      brew:
+        cask: [memoryanalyzer]
+
+  eza:
+    type: cli
+    arch:
+      pacman: [eza]
+    macos:
+      brew:
+        formula: [eza]
+
+  fastfetch:
+    type: cli
+    arch:
+      pacman: [fastfetch]
+    macos:
+      brew:
+        formula: [fastfetch]
+
+  fd:
+    type: cli
+    arch:
+      pacman: [fd]
+    macos:
+      brew:
+        formula: [fd]
+
+  ffmpeg:
+    type: cli
+    arch:
+      pacman: [ffmpeg]
+    macos:
+      brew:
+        formula: [ffmpeg]
+
+  firefox:
+    type: app
+    arch:
+      pacman: [firefox]
+    macos:
+      brew:
+        cask: [firefox]
+
+  fzf:
+    type: cli
+    arch:
+      pacman: [fzf]
+    macos:
+      brew:
+        formula: [fzf]
+
+  ghostty:
+    type: app
+    arch:
+      pacman: [ghostty]
+    macos:
+      brew:
+        cask: [ghostty]
+
+  gimp:
+    type: app
+    arch:
+      pacman: [gimp]
+    macos:
+      brew:
+        cask: [gimp]
+
+  git-delta:
+    type: cli
+    arch:
+      pacman: [git-delta]
+    macos:
+      brew:
+        formula: [git-delta]
+
+  github-cli:
+    type: cli
+    arch:
+      pacman: [github-cli]
+    macos:
+      brew:
+        formula: [gh]
+
+  gnupg:
+    type: cli
+    arch:
+      pacman: [gnupg]
+    macos:
+      brew:
+        formula: [gnupg]
+
+  go:
+    type: cli
+    arch:
+      pacman: [go]
+    macos:
+      brew:
+        formula: [go]
+
+  google-chrome:
+    type: app
+    arch:
+      aur: [google-chrome]
+    macos:
+      brew:
+        cask: [google-chrome]
+
+  gping:
+    type: cli
+    arch:
+      pacman: [gping]
+    macos:
+      brew:
+        formula: [gping]
+
+  herdr:
+    type: cli
+    arch:
+      aur: [herdr-bin]
+    macos:
+      brew:
+        formula: [herdr]
+
+  hugo:
+    type: cli
+    arch:
+      pacman: [hugo]
+    macos:
+      brew:
+        formula: [hugo]
+
+  imagemagick:
+    type: cli
+    arch:
+      pacman: [imagemagick]
+    macos:
+      brew:
+        formula: [imagemagick]
+
+  jetbrains-toolbox:
+    type: app
+    arch:
+      aur: [jetbrains-toolbox]
+    macos:
+      brew:
+        cask: [jetbrains-toolbox]
+
+  jq:
+    type: cli
+    arch:
+      pacman: [jq]
+    macos:
+      brew:
+        formula: [jq]
+
+  k9s:
+    type: cli
+    arch:
+      pacman: [k9s]
+    macos:
+      brew:
+        formula: [k9s]
+
+  lazydocker:
+    type: cli
+    arch:
+      pacman: [lazydocker]
+    macos:
+      brew:
+        formula: [lazydocker]
+
+  lazygit:
+    type: cli
+    arch:
+      pacman: [lazygit]
+    macos:
+      brew:
+        formula: [lazygit]
+
+  libreoffice:
+    type: app
+    arch:
+      pacman: [libreoffice-still]
+    macos:
+      brew:
+        cask: [libreoffice]
+
+  localsend:
+    type: app
+    arch:
+      aur: [localsend-bin]
+    macos:
+      brew:
+        cask: [localsend]
+
+  mpv:
+    type: cli
+    arch:
+      pacman: [mpv]
+    macos:
+      brew:
+        formula: [mpv]
+
+  ncdu:
+    type: cli
+    arch:
+      pacman: [ncdu]
+    macos:
+      brew:
+        formula: [ncdu]
+
+  neovim:
+    type: cli
+    arch:
+      pacman: [neovim]
+    macos:
+      brew:
+        formula: [neovim]
+
+  obs-studio:
+    type: app
+    arch:
+      pacman: [obs-studio]
+    macos:
+      brew:
+        cask: [obs]
+
+  obsidian:
+    type: app
+    arch:
+      pacman: [obsidian]
+    macos:
+      brew:
+        cask: [obsidian]
+
+  pnpm:
+    type: cli
+    arch:
+      pacman: [pnpm]
+    macos:
+      brew:
+        formula: [pnpm]
+
+  poppler:
+    type: cli
+    arch:
+      pacman: [poppler]
+    macos:
+      brew:
+        formula: [poppler]
+
+  postman:
+    type: app
+    arch:
+      aur: [postman-bin]
+    macos:
+      brew:
+        cask: [postman]
+
+  python-pipx:
+    type: cli
+    arch:
+      pacman: [python-pipx]
+    macos:
+      brew:
+        formula: [pipx]
+
+  qbittorrent:
+    type: app
+    arch:
+      pacman: [qbittorrent]
+    macos:
+      brew:
+        cask: [qbittorrent]
+
+  rclone:
+    type: cli
+    arch:
+      pacman: [rclone]
+    macos:
+      brew:
+        formula: [rclone]
+
+  resvg:
+    type: cli
+    arch:
+      pacman: [resvg]
+    macos:
+      brew:
+        formula: [resvg]
+
+  ripgrep:
+    type: cli
+    arch:
+      pacman: [ripgrep]
+    macos:
+      brew:
+        formula: [ripgrep]
+
+  sevenzip:
+    type: cli
+    arch:
+      pacman: [7zip]
+    macos:
+      brew:
+        formula: [sevenzip]
+
+  shellcheck:
+    type: cli
+    arch:
+      pacman: [shellcheck]
+    macos:
+      brew:
+        formula: [shellcheck]
+
+  slack:
+    type: app
+    arch:
+      aur: [slack-desktop]
+    macos:
+      brew:
+        cask: [slack]
+
+  spotify:
+    type: app
+    arch:
+      aur: [spotify]
+    macos:
+      brew:
+        cask: [spotify]
+
+  sqlite:
+    type: cli
+    arch:
+      pacman: [sqlite]
+    macos:
+      brew:
+        formula: [sqlite]
+
+  starship:
+    type: cli
+    arch:
+      pacman: [starship]
+    macos:
+      brew:
+        formula: [starship]
+
+  stow:
+    type: cli
+    arch:
+      pacman: [stow]
+    macos:
+      brew:
+        formula: [stow]
+
+  syncthing:
+    type: cli
+    arch:
+      pacman: [syncthing]
+    macos:
+      brew:
+        formula: [syncthing]
+
+  tailscale:
+    type: app
+    arch:
+      pacman: [tailscale]
+    macos:
+      brew:
+        cask: [tailscale-app]
+
+  telegram:
+    type: app
+    arch:
+      pacman: [telegram-desktop]
+    macos:
+      brew:
+        cask: [telegram]
+
+  tmux:
+    type: cli
+    arch:
+      pacman: [tmux]
+    macos:
+      brew:
+        formula: [tmux]
+
+  tree:
+    type: cli
+    arch:
+      pacman: [tree]
+    macos:
+      brew:
+        formula: [tree]
+
+  unison:
+    type: cli
+    arch:
+      pacman: [unison]
+    macos:
+      brew:
+        formula: [unison]
+
+  uv:
+    type: cli
+    arch:
+      pacman: [uv]
+    macos:
+      brew:
+        formula: [uv]
+
+  visual-studio-code:
+    type: app
+    arch:
+      aur: [visual-studio-code-bin]
+    macos:
+      brew:
+        cask: [visual-studio-code]
+
+  visualvm:
+    type: app
+    arch:
+      pacman: [visualvm]
+    macos:
+      brew:
+        cask: [visualvm]
+
+  viu:
+    type: cli
+    arch:
+      pacman: [viu]
+    macos:
+      brew:
+        formula: [viu]
+
+  wechat:
+    type: app
+    arch:
+      aur: [wechat-appimage]
+    macos:
+      brew:
+        cask: [wechat]
+
+  wget:
+    type: cli
+    arch:
+      pacman: [wget]
+    macos:
+      brew:
+        formula: [wget]
+
+  worktrunk:
+    type: cli
+    arch:
+      aur: [worktrunk-bin]
+    macos:
+      brew:
+        formula: [worktrunk]
+
+  yazi:
+    type: cli
+    arch:
+      pacman: [yazi]
+    macos:
+      brew:
+        formula: [yazi]
+
+  yt-dlp:
+    type: cli
+    arch:
+      pacman: [yt-dlp]
+    macos:
+      brew:
+        formula: [yt-dlp]
+
+  zoxide:
+    type: cli
+    arch:
+      pacman: [zoxide]
+    macos:
+      brew:
+        formula: [zoxide]

@@ -57,7 +57,7 @@ Clone the public setup repository beneath the daily user's future home, even
 when cloning as root:
 
 ```bash
-pacman -Syu --needed git
+pacman -Syu --needed git go-yq
 mkdir -p /home/lichader
 git clone https://github.com/lichader/dot.git /home/lichader/dot
 cd /home/lichader/dot
@@ -116,10 +116,13 @@ They start after reboot.
 
 ## Desktop and hardware profile
 
-The main package manifest is organized by concern in
-`linux-bootstrap/lib/packages.sh` and targets an AMD workstation. Font packages
-and their reviewed fallback logic live in `linux-bootstrap/fonts.sh`. Together
-they include:
+The strict cross-platform package intersection lives in the repository-level
+`packages.yaml`: every entry must have both an Arch mapping and a Homebrew
+formula or cask mapping. `linux-bootstrap/lib/packages.sh` contains only the
+Arch bootstrap, hardware, desktop, and other Linux-specific packages. The Arch
+bootstrap combines both manifests at installation time. Font packages and
+their reviewed fallback logic live in `linux-bootstrap/fonts.sh`. Together they
+include:
 
 - AMD microcode, Mesa, Radeon Vulkan/VA-API support, and monitoring tools
 - Hyprland, Noctalia, portals, UWSM, screenshot tools, and input methods
@@ -227,9 +230,10 @@ machine state, private dotfiles, or local agent configuration to this public
 repository. Public wallpapers must be checked for sensitive metadata before
 they are committed.
 
-AUR packages execute community-maintained `PKGBUILD` files. The main AUR
-manifest in `linux-bootstrap/lib/packages.sh` and the font-specific AUR handling
-in `linux-bootstrap/fonts.sh` should both remain explicit and reviewable.
+AUR packages execute community-maintained `PKGBUILD` files. The Arch mappings
+in `packages.yaml`, the Arch-only AUR manifest in
+`linux-bootstrap/lib/packages.sh`, and the font-specific AUR handling in
+`linux-bootstrap/fonts.sh` should all remain explicit and reviewable.
 
 The private checkout is trusted input. The public bootstrap validates its
 expected Git Stow package structure but does not audit or publish its contents.
@@ -244,10 +248,11 @@ git diff --check
 ```
 
 `linux-bootstrap/check.sh` validates shell syntax, runs ShellCheck when
-available, checks package-list invariants and official package availability,
-checks AUR availability when Paru is installed, validates that the public Git
-package contains no private keys, verifies the essential Zsh/XDG setup, and
-exercises dry runs with and without a private dotfiles directory.
+available, checks the shared and Arch-only package-list invariants and official
+package availability, checks AUR availability when Paru is installed, validates
+that the public Git package contains no private keys, verifies the essential
+Zsh/XDG setup, and exercises dry runs with and without a private dotfiles
+directory.
 
 For public Neovim changes, also run:
 

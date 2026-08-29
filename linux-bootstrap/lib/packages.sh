@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-# Official repository packages are installed as root with pacman. AUR packages
-# are kept separate so the trust and build seam remains visible and all builds
-# happen as the target user.
+# Arch-specific official packages are installed as root with pacman. AUR
+# packages are kept separate so the trust and build seam remains visible and
+# all builds happen as the target user. Applications and CLIs used on both
+# Arch and macOS live in the repository-level packages.yaml manifest.
 
 BOOTSTRAP_PACKAGES=(
     base-devel
     ca-certificates
     curl
     git
+    go-yq
     sudo
     zsh
 )
@@ -18,7 +20,6 @@ BASE_SYSTEM_PACKAGES=(
     btrfs-progs
     cronie
     efibootmgr
-    gnupg
     inetutils
     iptables
     linux
@@ -30,11 +31,9 @@ BASE_SYSTEM_PACKAGES=(
     openssh
     pacman-contrib
     procps-ng
-    stow
     unrar
     unzip
     vim
-    wget
     xdg-user-dirs
     xdg-utils
     zip
@@ -86,7 +85,6 @@ HYPRLAND_PACKAGES=(
     fcitx5-qt
     fcitx5-rime
     fortune-mod
-    ghostty
     gnome-keyring
     grim
     hyprland
@@ -107,29 +105,20 @@ HYPRLAND_PACKAGES=(
 
 GUI_APPLICATION_PACKAGES=(
     android-file-transfer
-    discord
     distroshelf
     filezilla
-    firefox
-    gimp
     gnome-calculator
     gvfs
     gvfs-gphoto2
     gvfs-smb
-    libreoffice-still
     mtpfs
-    obs-studio
-    obsidian
     openrgb
-    qbittorrent
     ristretto
     steam
-    telegram-desktop
     thunar
     thunar-volman
     virt-manager
     virt-viewer
-    visualvm
     zathura
     zathura-cb
     zathura-djvu
@@ -137,60 +126,14 @@ GUI_APPLICATION_PACKAGES=(
 )
 
 CLI_PACKAGES=(
-    7zip
-    age
-    bat
     bind
-    btop
-    chafa
     distrobox
-    docker
-    docker-compose
-    eza
-    fastfetch
-    fd
-    ffmpeg
-    ffmpegthumbnailer
-    fzf
-    git-delta
-    github-cli
-    go
     gphoto2
-    gping
     htop
-    hugo
-    imagemagick
-    jq
-    k9s
-    lazydocker
-    lazygit
     less
-    mpv
-    ncdu
-    neovim
-    pnpm
-    poppler
-    pyenv
-    python-pipx
-    rclone
-    resvg
-    ripgrep
     rust
-    shellcheck
-    shfmt
     socat
-    sqlite
-    starship
-    syncthing
-    tmux
-    tree
     ueberzugpp
-    unison
-    uv
-    viu
-    yazi
-    yt-dlp
-    zoxide
 )
 
 VIRTUALIZATION_PACKAGES=(
@@ -211,33 +154,19 @@ GAMING_PACKAGES=(
 SYSTEM_UTILITY_PACKAGES=(
     liquidctl
     smartmontools
-    tailscale
     timeshift
     tuned
     v4l2loopback-dkms
 )
 
 AUR_PACKAGES=(
-    1password
-    dropbox
-    eclipse-mat
     fladder-git
-    google-chrome
-    herdr-bin
     heroic-games-launcher-bin
-    jetbrains-toolbox
-    localsend-bin
-    postman-bin
     protonplus
     rime-ice-git
-    slack-desktop
-    spotify
     trashy
-    visual-studio-code-bin
     wayscriber-bin
-    wechat-appimage
     winboat-bin
-    worktrunk-bin
 )
 
 OFFICIAL_PACKAGES=(

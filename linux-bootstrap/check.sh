@@ -7,6 +7,8 @@ DOTFILES_FIXTURE=""
 DRY_RUN_OUTPUT=""
 POST_INSTALL_FIXTURE=""
 STOW_FIXTURE=""
+SHARED_ARCH_AUR_PACKAGES=()
+SHARED_ARCH_OFFICIAL_PACKAGES=()
 
 cleanup() {
     if [[ -n "$DOTFILES_FIXTURE" && -d "$DOTFILES_FIXTURE" ]]; then
@@ -24,6 +26,8 @@ trap cleanup EXIT
 
 # shellcheck source=linux-bootstrap/lib/packages.sh
 source "$SCRIPT_DIR/lib/packages.sh"
+# shellcheck source=lib/shared-packages.sh
+source "$SCRIPT_DIR/../lib/shared-packages.sh"
 
 fail() {
     printf 'error: %s\n' "$*" >&2
@@ -35,7 +39,9 @@ for script in \
     "$SCRIPT_DIR/bootstrap.sh" \
     "$SCRIPT_DIR/fonts.sh" \
     "$SCRIPT_DIR/post-install.sh" \
-    "$SCRIPT_DIR/lib/"*.sh; do
+    "$SCRIPT_DIR/lib/"*.sh \
+    "$SCRIPT_DIR/../lib/"*.sh \
+    "$SCRIPT_DIR/../macos-bootstrap/install-packages.sh"; do
     bash -n "$script"
 done
 
@@ -45,10 +51,16 @@ if command -v shellcheck >/dev/null 2>&1; then
         "$SCRIPT_DIR/bootstrap.sh" \
         "$SCRIPT_DIR/fonts.sh" \
         "$SCRIPT_DIR/post-install.sh" \
-        "$SCRIPT_DIR/lib/"*.sh
+        "$SCRIPT_DIR/lib/"*.sh \
+        "$SCRIPT_DIR/../lib/"*.sh \
+        "$SCRIPT_DIR/../macos-bootstrap/install-packages.sh"
 fi
 
 printf 'Checking package manifest invariants...\n'
+validate_shared_package_manifest
+mapfile -t SHARED_ARCH_OFFICIAL_PACKAGES < <(shared_arch_pacman_packages)
+mapfile -t SHARED_ARCH_AUR_PACKAGES < <(shared_arch_aur_packages)
+
 [[ -d "$SCRIPT_DIR/../config/.config" ]] \
     || fail "public config Stow package is missing"
 [[ -f "$SCRIPT_DIR/../git/.gitconfig" && -f "$SCRIPT_DIR/../git/.gitignore" ]] \
@@ -77,22 +89,38 @@ stow --dir "$SCRIPT_DIR/.." --target "$STOW_FIXTURE" --no-folding git
     || fail "public Git Stow package does not deploy both global files"
 
 duplicates="$(
-    printf '%s\n' "${BOOTSTRAP_PACKAGES[@]}" "${OFFICIAL_PACKAGES[@]}" "${AUR_PACKAGES[@]}" \
+    printf '%s\n' \
+        "${BOOTSTRAP_PACKAGES[@]}" \
+        "${OFFICIAL_PACKAGES[@]}" \
+        "${AUR_PACKAGES[@]}" \
+        "${SHARED_ARCH_OFFICIAL_PACKAGES[@]}" \
+        "${SHARED_ARCH_AUR_PACKAGES[@]}" \
         | sort \
         | uniq -d
 )"
 [[ -z "$duplicates" ]] || fail "duplicate package declarations: $duplicates"
 
 forbidden="$(
-    printf '%s\n' "${OFFICIAL_PACKAGES[@]}" "${AUR_PACKAGES[@]}" \
+    printf '%s\n' \
+        "${OFFICIAL_PACKAGES[@]}" \
+        "${AUR_PACKAGES[@]}" \
+        "${SHARED_ARCH_OFFICIAL_PACKAGES[@]}" \
+        "${SHARED_ARCH_AUR_PACKAGES[@]}" \
         | grep -E '^(sway|swaybg|swayidle|swaylock|plasma.*|kwin.*|dolphin|konsole|kate|ark|okular)$' \
         || true
 )"
 [[ -z "$forbidden" ]] || fail "Sway/KDE packages are intentionally excluded: $forbidden"
 
 printf 'Checking official package availability...\n'
-if ! pacman -Si "${BOOTSTRAP_PACKAGES[@]}" "${OFFICIAL_PACKAGES[@]}" >/dev/null 2>&1; then
-    for package in "${BOOTSTRAP_PACKAGES[@]}" "${OFFICIAL_PACKAGES[@]}"; do
+if ! pacman -Si \
+    "${BOOTSTRAP_PACKAGES[@]}" \
+    "${OFFICIAL_PACKAGES[@]}" \
+    "${SHARED_ARCH_OFFICIAL_PACKAGES[@]}" \
+    >/dev/null 2>&1; then
+    for package in \
+        "${BOOTSTRAP_PACKAGES[@]}" \
+        "${OFFICIAL_PACKAGES[@]}" \
+        "${SHARED_ARCH_OFFICIAL_PACKAGES[@]}"; do
         pacman -Si "$package" >/dev/null 2>&1 \
             || fail "official package is unavailable: $package"
     done
@@ -100,8 +128,8 @@ fi
 
 if command -v paru >/dev/null 2>&1; then
     printf 'Checking AUR package availability...\n'
-    if ! paru -Si "${AUR_PACKAGES[@]}" >/dev/null 2>&1; then
-        for package in "${AUR_PACKAGES[@]}"; do
+    if ! paru -Si "${AUR_PACKAGES[@]}" "${SHARED_ARCH_AUR_PACKAGES[@]}" >/dev/null 2>&1; then
+        for package in "${AUR_PACKAGES[@]}" "${SHARED_ARCH_AUR_PACKAGES[@]}"; do
             paru -Si "$package" >/dev/null 2>&1 \
                 || fail "AUR package is unavailable: $package"
         done

@@ -14,6 +14,21 @@ The supported standalone interface is safe to rerun:
 ./linux-bootstrap/bootstrap.sh --user lichader
 ```
 
+Cross-platform applications and CLIs are declared once in the repository-level
+[`packages.yaml`](../packages.yaml). The Arch bootstrap installs its Pacman and
+AUR mappings in addition to the Arch-only system packages in
+[`lib/packages.sh`](lib/packages.sh). Hardware, kernel, Hyprland, and other
+Linux-specific packages never enter the shared manifest.
+
+On macOS, after installing Homebrew, install the corresponding formulae and
+casks with:
+
+```bash
+./macos-bootstrap/install-packages.sh
+```
+
+The macOS helper installs `yq` as its manifest-reader bootstrap dependency.
+
 Pass an authenticated checkout of the private repository when its Git package
 should also be deployed:
 
@@ -43,7 +58,7 @@ of the base Arch installation. Then fetch the public setup repository over
 HTTPS and run the bootstrap as root:
 
 ```bash
-pacman -Syu --needed git
+pacman -Syu --needed git go-yq
 mkdir -p /home/lichader
 git clone https://github.com/lichader/dot.git /home/lichader/dot
 cd /home/lichader/dot
@@ -101,7 +116,7 @@ sessions are reused. Preview the flow or omit Tailscale with:
 
 ## What it configures
 
-- Full system upgrade, multilib, Git, sudo, Zsh, and Paru bootstrap
+- Full system upgrade, multilib, Git, sudo, Zsh, go-yq, and Paru bootstrap
 - System-wide Zsh XDG routing plus persistent completion-cache and history
   directories for the target user
 - Linux firmware and AMD CPU/GPU Mesa, Vulkan, VA-API, and monitoring tools
@@ -141,10 +156,10 @@ workstation profile.
 
 Official packages come from configured Arch repositories. AUR packages execute
 community-maintained `PKGBUILD` files as the daily user, with review prompts
-disabled for automation. Review `linux-bootstrap/lib/packages.sh` and
-`linux-bootstrap/fonts.sh` before running them on a new machine. NVM and SDKMAN
-use their upstream installers; their bootstrap versions and installed
-candidates are checked before rerunning.
+disabled for automation. Review `packages.yaml`,
+`linux-bootstrap/lib/packages.sh`, and `linux-bootstrap/fonts.sh` before running
+them on a new machine. NVM and SDKMAN use their upstream installers; their
+bootstrap versions and installed candidates are checked before rerunning.
 
 The private repository is an independent trust boundary. This public bootstrap
 only reads its Git package when its path is explicitly supplied.
