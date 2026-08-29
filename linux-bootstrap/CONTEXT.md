@@ -112,7 +112,7 @@ they include:
 - AMD microcode, Mesa, Radeon Vulkan/VA-API support, and monitoring tools
 - Hyprland, Noctalia, portals, UWSM, screenshot tools, and input methods
 - PipeWire/WirePlumber, NetworkManager with iwd, Bluetooth, printing, Docker,
-  libvirt, gaming packages, and workstation applications
+  libvirt, Tailscale, gaming packages, and workstation applications
 - Zsh, Paru, Neovim, Herdr, development tools, fonts, and user-scoped language
   tools
 
@@ -132,6 +132,13 @@ the kernel prefers inexpensive in-memory swap over reclaiming useful file
 cache, and page-cluster 0 to disable swap readahead. Zram is volatile and does
 not provide a hibernation target; hibernation would require separate
 disk-backed swap.
+
+## Tailscale
+
+The official `tailscale` package is installed and `tailscaled.service` is
+enabled for the first normal boot. Joining the workstation to a tailnet remains
+interactive with `sudo tailscale up`; reusable authentication keys are secrets
+and must not be stored in this public repository.
 
 ## Login manager
 

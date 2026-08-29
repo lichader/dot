@@ -88,7 +88,7 @@ both forms of the dry-run interface with:
 - GNOME Keyring secret storage, unlocked through the Greetd PAM login using the
   user's login password
 - NetworkManager with the iwd backend, Bluetooth, printing, Docker, libvirt,
-  LACT, package-cache cleanup, and scheduled services
+  LACT, Tailscale, package-cache cleanup, and scheduled services
 - Zstd-compressed Zram swap sized to half of system memory with a 16 GiB cap,
   plus virtual-memory tuning for in-memory swap
 - GUI, terminal, development, virtualization, gaming, and AUR applications
@@ -97,6 +97,15 @@ both forms of the dry-run interface with:
 - Herdr with the pinned Vim/Neovim pane-navigation plugin
 - NVM with the current Node LTS, SDKMAN with Java/Maven/Gradle, pipx tools, and
   Fabric
+
+`tailscaled.service` is enabled for the first boot, but joining the machine to
+a tailnet remains an explicit post-install step:
+
+```bash
+sudo tailscale up
+```
+
+The public bootstrap does not store or consume a Tailscale authentication key.
 
 Sway and KDE/Plasma packages are intentionally excluded. Hardware-specific
 Intel, Nouveau, and VMware graphics packages are also excluded from this AMD

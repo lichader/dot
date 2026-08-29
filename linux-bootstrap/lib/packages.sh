@@ -61,15 +61,12 @@ DESKTOP_FOUNDATION_PACKAGES=(
     bluez-utils
     brightnessctl
     cups
-    cups-filters
     ddcutil
     greetd
     greetd-tuigreet
     gst-plugin-pipewire
     iwd
     libnotify
-    libpulse
-    libsecret
     networkmanager
     nss-mdns
     pipewire
@@ -92,7 +89,6 @@ HYPRLAND_PACKAGES=(
     ghostty
     gnome-keyring
     grim
-    hyprgraphics
     hyprland
     kvantum
     noctalia
@@ -107,21 +103,20 @@ HYPRLAND_PACKAGES=(
     wl-clipboard
     xdg-desktop-portal-gtk
     xdg-desktop-portal-hyprland
-    xorg-xwayland
 )
 
 GUI_APPLICATION_PACKAGES=(
     android-file-transfer
-    darktable
     discord
+    distroshelf
     filezilla
+    firefox
     gimp
     gnome-calculator
     gvfs
     gvfs-gphoto2
     gvfs-smb
     libreoffice-still
-    lutris
     mtpfs
     obs-studio
     obsidian
@@ -135,7 +130,6 @@ GUI_APPLICATION_PACKAGES=(
     virt-manager
     virt-viewer
     visualvm
-    wezterm
     zathura
     zathura-cb
     zathura-djvu
@@ -188,7 +182,6 @@ CLI_PACKAGES=(
     sqlite
     starship
     syncthing
-    television
     tmux
     tree
     ueberzugpp
@@ -202,15 +195,10 @@ CLI_PACKAGES=(
 
 VIRTUALIZATION_PACKAGES=(
     dnsmasq
-    edk2-ovmf
     guestfs-tools
-    libosinfo
     libvirt
-    qemu-full
+    qemu-desktop
     swtpm
-    tuned
-    v4l2loopback-dkms
-    virt-install
 )
 
 GAMING_PACKAGES=(
@@ -223,13 +211,14 @@ GAMING_PACKAGES=(
 SYSTEM_UTILITY_PACKAGES=(
     liquidctl
     smartmontools
+    tailscale
     timeshift
+    tuned
+    v4l2loopback-dkms
 )
 
 AUR_PACKAGES=(
     1password
-    catppuccin-gtk-theme-mocha
-    distroshelf
     dropbox
     eclipse-mat
     fladder-git
@@ -237,23 +226,18 @@ AUR_PACKAGES=(
     herdr-bin
     heroic-games-launcher-bin
     jetbrains-toolbox
-    liquibase
     localsend-bin
-    opencode-bin
     postman-bin
     protonplus
     rime-ice-git
     slack-desktop
     spotify
-    thorium-browser-bin
-    timewall-bin
     trashy
     visual-studio-code-bin
     wayscriber-bin
     wechat-appimage
     winboat-bin
     worktrunk-bin
-    zen-browser-bin
 )
 
 OFFICIAL_PACKAGES=(
@@ -280,4 +264,6 @@ SYSTEM_SERVICES=(
     lactd.service
     libvirtd.service
     paccache.timer
+    tailscaled.service
+    tuned.service
 )
