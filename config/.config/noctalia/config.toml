@@ -3,9 +3,9 @@
 
 [bar.default]
 center = ["group:g1"]
-end = ["tray", "notifications", "network", "bluetooth", "volume", "control-center", "session"]
+end = ["group:g3", "tray", "group:g4", "control-center", "session"]
 scale = 1.25
-start = ["group:g2", "media"]
+start = ["group:g2"]
 thickness = 40
 
 [[bar.default.capsule_group]]
@@ -28,8 +28,32 @@ members = ["launcher", "wallpaper", "workspaces"]
 opacity = 1.0
 padding = 6.0
 
+[[bar.default.capsule_group]]
+accordion = false
+accordion_direction = "end"
+border = ""
+enabled = true
+fill = "on_primary"
+id = "g3"
+members = ["cpu", "ram"]
+opacity = 1.0
+padding = 6.0
+
+[[bar.default.capsule_group]]
+accordion = false
+accordion_direction = "end"
+enabled = true
+fill = "surface_variant"
+id = "g4"
+members = ["network", "bluetooth", "volume", "notifications"]
+opacity = 1.0
+padding = 6.0
+
 [brightness]
 enable_ddcutil = true
+
+[control_center.calendar]
+show_events_card = false
 
 # Noctalia owns idle handling as well as the lock screen. The screen-off action
 # replaces the old brightnessctl rule, which did not control the DDC displays.
@@ -60,7 +84,7 @@ enabled = true
 lock_before_suspend = true
 
 [lockscreen_widgets]
-enabled = true
+enabled = false
 schema_version = 2
 widget_order = ["lockscreen-login-box@HDMI-A-1", "lockscreen-login-box@DP-1"]
 
@@ -142,9 +166,11 @@ grid = true
 grid_columns = 5
 
 [theme]
+builtin = "Gruvbox"
 community_palette = "Gruvbox Material Hard"
-source = "community"
-wallpaper_scheme = "soft"
+pure_black_dark = true
+source = "wallpaper"
+wallpaper_scheme = "m3-monochrome"
 
 [wallpaper]
 directory = "~/.config/hypr/wallpapers/tree"
@@ -163,10 +189,14 @@ path = "~/.config/hypr/wallpapers/tree/Rancho_Cucamonga_Tree_6K.png"
 path = "~/.config/hypr/wallpapers/tree/Rancho_Cucamonga_Tree_6K.png"
 
 [widget.media]
+album_art_only = true
 capsule = true
 
 [widget.network]
 show_label = false
+
+[widget.ram]
+stat = "ram_pct"
 
 [widget.tray]
 capsule = true
