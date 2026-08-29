@@ -13,13 +13,16 @@ BASE_FONT_PACKAGES=(
     ttf-sarasa-gothic
 )
 
-# Apple replaced the SF Pro and SF Compact files behind its stable download
-# URLs in June 2026. These hashes are used only when the current AUR recipe
-# still contains the previous hashes.
-OLD_SF_PRO_SHA256="5b4b19922a41b6b76e227934a2871b1405d7d6acb467eca4db153215f0d6c78b"
-OLD_SF_COMPACT_SHA256="4567aae0616dd35afc34bad6bef547e72fd1e65845305a33973064518d1d5348"
-CURRENT_SF_PRO_SHA256="6311a4f0843a4d2e616a0b05c77512d31d2ea950459cf526cdb5b90996a0794f"
-CURRENT_SF_COMPACT_SHA256="fe517a5184be290e66fe89b8b4b6ea18548fced1ae1539499a71265e3317249f"
+# Apple replaces files behind these stable download URLs without changing the
+# filenames. The AUR recipe still contains the original 7.0.5 hashes, while
+# these replacement hashes were verified directly against Apple's CDN on
+# 2026-08-29. Unknown recipe or source changes remain a hard failure.
+AUR_SF_PRO_SHA256="5b4b19922a41b6b76e227934a2871b1405d7d6acb467eca4db153215f0d6c78b"
+AUR_SF_COMPACT_SHA256="4567aae0616dd35afc34bad6bef547e72fd1e65845305a33973064518d1d5348"
+VERIFIED_SF_PRO_SHA256="a9094f0de9b789d73544ee50fc52a0884d4a9f7fcf62de52974e3204f3a74a62"
+VERIFIED_SF_COMPACT_SHA256="2c89003967be59a6867aa5de12066352d9a6b44b785cf2b9ff88ef0d77ff28fc"
+VERIFIED_SF_MONO_SHA256="6d4a0b78e3aacd06f913f642cead1c7db4af34ed48856d7171a2e0b55d9a7945"
+VERIFIED_NEW_YORK_SHA256="1c2eedb4526cc0f326f8b7ea978f5a433756476a2c8c56072537608edb88f8f4"
 
 require_command() {
     if ! command -v "$1" >/dev/null 2>&1; then
@@ -46,12 +49,12 @@ install_packages_if_missing() {
     paru -S --needed --noconfirm --skipreview --noinstalldebug "${missing_packages[@]}"
 }
 
-install_apple_fonts_from_patched_aur() {
+install_apple_fonts_from_reviewed_aur() {
     local build_dir
     local build_status=0
     build_dir="$(mktemp -d)"
 
-    echo "Retrying apple-fonts with the verified June 2026 Apple CDN hashes..."
+    echo "Installing apple-fonts from its reviewed AUR recipe..."
     if ! git clone --depth 1 https://aur.archlinux.org/apple-fonts.git "$build_dir/apple-fonts"; then
         rm -rf -- "$build_dir"
         return 1
@@ -65,17 +68,26 @@ install_apple_fonts_from_patched_aur() {
         return 1
     fi
 
-    if ! grep -Fq "$OLD_SF_PRO_SHA256" "$pkgbuild" \
-        || ! grep -Fq "$OLD_SF_COMPACT_SHA256" "$pkgbuild"; then
+    if ! grep -Fq "$VERIFIED_SF_MONO_SHA256" "$pkgbuild" \
+        || ! grep -Fq "$VERIFIED_NEW_YORK_SHA256" "$pkgbuild"; then
         echo "Refusing to patch apple-fonts: the AUR recipe no longer matches the reviewed version." >&2
         rm -rf -- "$build_dir"
         return 1
     fi
 
-    sed -i \
-        -e "s/$OLD_SF_PRO_SHA256/$CURRENT_SF_PRO_SHA256/" \
-        -e "s/$OLD_SF_COMPACT_SHA256/$CURRENT_SF_COMPACT_SHA256/" \
-        "$pkgbuild"
+    if grep -Fq "$AUR_SF_PRO_SHA256" "$pkgbuild" \
+        && grep -Fq "$AUR_SF_COMPACT_SHA256" "$pkgbuild"; then
+        echo "Applying the verified replacement hashes before downloading from Apple..."
+        sed -i \
+            -e "s/$AUR_SF_PRO_SHA256/$VERIFIED_SF_PRO_SHA256/" \
+            -e "s/$AUR_SF_COMPACT_SHA256/$VERIFIED_SF_COMPACT_SHA256/" \
+            "$pkgbuild"
+    elif ! grep -Fq "$VERIFIED_SF_PRO_SHA256" "$pkgbuild" \
+        || ! grep -Fq "$VERIFIED_SF_COMPACT_SHA256" "$pkgbuild"; then
+        echo "Refusing to patch apple-fonts: the SF Pro or SF Compact hashes are unreviewed." >&2
+        rm -rf -- "$build_dir"
+        return 1
+    fi
 
     (
         cd "$build_dir/apple-fonts"
@@ -117,9 +129,7 @@ install_packages_if_missing "${BASE_FONT_PACKAGES[@]}"
 install_packages_if_missing "$PINGFANG_PACKAGE"
 
 if ! pacman -Q "$APPLE_FONTS_PACKAGE" >/dev/null 2>&1; then
-    if ! paru -S --needed --noconfirm --skipreview --noinstalldebug "$APPLE_FONTS_PACKAGE"; then
-        install_apple_fonts_from_patched_aur
-    fi
+    install_apple_fonts_from_reviewed_aur
 else
     echo "$APPLE_FONTS_PACKAGE is already installed."
 fi
