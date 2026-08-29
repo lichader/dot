@@ -314,11 +314,11 @@ deploy_user_configuration() {
         --ignore='^\.config/(aerospace|borders|karabiner|sketchybar|skhd|spacebar|yabai)(/|$)' \
         --ignore='^\.config/hypr/.*\.bak$' \
         --ignore='^\.config/zsh/\.zcompdump' \
-        config
+        config git
 
     if [[ -n "$DOTFILES_ROOT" ]]; then
         if [[ "$DRY_RUN" != true ]] \
-            && ! as_target_user test -r "$DOTFILES_ROOT/git/.gitconfig"; then
+            && ! as_target_user test -r "$DOTFILES_ROOT/git/.gitconfig.private"; then
             die "$TARGET_USER cannot read $DOTFILES_ROOT; clone the private repository beneath $TARGET_HOME."
         fi
 
@@ -329,10 +329,11 @@ deploy_user_configuration() {
             --no-folding \
             git
 
-        ensure_git_include "$DOTFILES_ROOT"
     else
         printf '  No dotfiles directory supplied; skipping private Git configuration.\n'
     fi
+
+    configure_git_local
 
     for desktop_file in "$SCRIPT_DIR"/wm/desktop-files/*.desktop; do
         run install \
@@ -473,6 +474,7 @@ main() {
     log "Bootstrap complete"
     printf 'Reboot into the installed system and select Hyprland in greetd.\n'
     printf 'Group membership changes take effect at the next login.\n'
+    printf 'After the first graphical login, run: %s/post-install.sh\n' "$SCRIPT_DIR"
 }
 
 main "$@"

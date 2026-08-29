@@ -1,0 +1,36 @@
+[alias]
+	lg = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) %C(bold green)%ar%C(reset) %C(dim white)%an%C(reset) %C(white)%s%C(reset)%C(auto)%d%C(reset)'
+	lgh = log --graph --topo-order --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) %C(bold green)%ar%C(reset) %C(auto)%d%C(reset) %C(dim white)%an%C(reset)%n         %C(white)%s%C(reset)'
+
+[core]
+	excludesFile = ~/.gitignore
+	editor = vim
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true
+	line-numbers = true
+
+[merge]
+	conflictStyle = diff3
+
+[diff]
+	colorMoved = default
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[worktree]
+	useRelativePaths = true
+
+[include]
+	path = ~/.gitconfig.private
+
+[include]
+	path = ~/.gitconfig.local

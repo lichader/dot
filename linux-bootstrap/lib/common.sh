@@ -130,22 +130,17 @@ ensure_directory() {
     run install -d -o "$owner" -g "$group" -m "$mode" "$directory"
 }
 
-ensure_git_include() {
-    local dotfiles_root="$1"
-    local gitconfig="$TARGET_HOME/.gitconfig"
-    local include_path="$dotfiles_root/git/.gitconfig"
+configure_git_local() {
+    local gitconfig="$TARGET_HOME/.gitconfig.local"
+    local credential_helper="/usr/lib/git-core/git-credential-libsecret"
 
     if [[ "${DRY_RUN:-false}" == true ]]; then
-        print_command git config --file "$gitconfig" include.path "$include_path"
+        print_command git config --file "$gitconfig" \
+            --replace-all credential.helper "$credential_helper"
         return 0
     fi
 
     as_target_user touch "$gitconfig"
-    if as_target_user git config --file "$gitconfig" --get-all include.path \
-        | grep -Fxq "$include_path"; then
-        printf '  Git include is already configured.\n'
-        return 0
-    fi
-
-    as_target_user git config --file "$gitconfig" --add include.path "$include_path"
+    as_target_user git config --file "$gitconfig" \
+        --replace-all credential.helper "$credential_helper"
 }

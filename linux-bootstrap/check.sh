@@ -4,10 +4,19 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_FIXTURE=""
+DRY_RUN_OUTPUT=""
+POST_INSTALL_FIXTURE=""
+STOW_FIXTURE=""
 
 cleanup() {
     if [[ -n "$DOTFILES_FIXTURE" && -d "$DOTFILES_FIXTURE" ]]; then
         rm -rf -- "$DOTFILES_FIXTURE"
+    fi
+    if [[ -n "$STOW_FIXTURE" && -d "$STOW_FIXTURE" ]]; then
+        rm -rf -- "$STOW_FIXTURE"
+    fi
+    if [[ -n "$POST_INSTALL_FIXTURE" && -d "$POST_INSTALL_FIXTURE" ]]; then
+        rm -rf -- "$POST_INSTALL_FIXTURE"
     fi
 }
 
@@ -22,7 +31,11 @@ fail() {
 }
 
 printf 'Checking shell syntax...\n'
-for script in "$SCRIPT_DIR/bootstrap.sh" "$SCRIPT_DIR/fonts.sh" "$SCRIPT_DIR/lib/"*.sh; do
+for script in \
+    "$SCRIPT_DIR/bootstrap.sh" \
+    "$SCRIPT_DIR/fonts.sh" \
+    "$SCRIPT_DIR/post-install.sh" \
+    "$SCRIPT_DIR/lib/"*.sh; do
     bash -n "$script"
 done
 
@@ -31,12 +44,37 @@ if command -v shellcheck >/dev/null 2>&1; then
     shellcheck \
         "$SCRIPT_DIR/bootstrap.sh" \
         "$SCRIPT_DIR/fonts.sh" \
+        "$SCRIPT_DIR/post-install.sh" \
         "$SCRIPT_DIR/lib/"*.sh
 fi
 
 printf 'Checking package manifest invariants...\n'
 [[ -d "$SCRIPT_DIR/../config/.config" ]] \
     || fail "public config Stow package is missing"
+[[ -f "$SCRIPT_DIR/../git/.gitconfig" && -f "$SCRIPT_DIR/../git/.gitignore" ]] \
+    || fail "public Git Stow package is incomplete"
+
+git config --file "$SCRIPT_DIR/../git/.gitconfig" --list >/dev/null \
+    || fail "public Git configuration is invalid"
+
+private_git_keys="$(
+    git config --file "$SCRIPT_DIR/../git/.gitconfig" --name-only --list \
+        | grep -Ei '^(credential\.|includeif\.|user\.)' \
+        || true
+)"
+[[ -z "$private_git_keys" ]] \
+    || fail "public Git configuration contains private or machine-local keys: $private_git_keys"
+
+for git_overlay in '~/.gitconfig.private' '~/.gitconfig.local'; do
+    git config --file "$SCRIPT_DIR/../git/.gitconfig" --get-all include.path \
+        | grep -Fxq "$git_overlay" \
+        || fail "public Git configuration does not include $git_overlay"
+done
+
+STOW_FIXTURE="$(mktemp -d)"
+stow --dir "$SCRIPT_DIR/.." --target "$STOW_FIXTURE" --no-folding git
+[[ -L "$STOW_FIXTURE/.gitconfig" && -L "$STOW_FIXTURE/.gitignore" ]] \
+    || fail "public Git Stow package does not deploy both global files"
 
 duplicates="$(
     printf '%s\n' "${BOOTSTRAP_PACKAGES[@]}" "${OFFICIAL_PACKAGES[@]}" "${AUR_PACKAGES[@]}" \
@@ -73,14 +111,43 @@ else
 fi
 
 printf 'Checking the public bootstrap interface...\n'
-"$SCRIPT_DIR/bootstrap.sh" --user "${SUDO_USER:-${USER:-lichader}}" --dry-run >/dev/null
+DRY_RUN_OUTPUT="$(
+    "$SCRIPT_DIR/bootstrap.sh" --user "${SUDO_USER:-${USER:-lichader}}" --dry-run
+)"
+
+for expected_path in \
+    /etc/zsh/zshenv \
+    /.cache \
+    /.local/share \
+    /.local/state \
+    /.cache/zsh \
+    /.local/state/zsh; do
+    grep -Fq "$expected_path" <<<"$DRY_RUN_OUTPUT" \
+        || fail "bootstrap omits essential Zsh setup path: $expected_path"
+done
 
 DOTFILES_FIXTURE="$(mktemp -d)"
 mkdir -p "$DOTFILES_FIXTURE/git"
+touch "$DOTFILES_FIXTURE/git/.gitconfig.private"
+stow --dir "$DOTFILES_FIXTURE" --target "$STOW_FIXTURE" --no-folding git
+[[ -L "$STOW_FIXTURE/.gitconfig.private" ]] \
+    || fail "private Git overlay cannot be Stowed alongside the public package"
 "$SCRIPT_DIR/bootstrap.sh" \
     --user "${SUDO_USER:-${USER:-lichader}}" \
     --dotfiles-dir "$DOTFILES_FIXTURE" \
     --dry-run \
     >/dev/null
+
+POST_INSTALL_FIXTURE="$(mktemp -d)"
+post_install_output="$(
+    HOME="$POST_INSTALL_FIXTURE" \
+        "$SCRIPT_DIR/post-install.sh" --dry-run --skip-tailscale
+)"
+grep -Fq 'gh auth login' <<<"$post_install_output" \
+    || fail "post-install dry run omits GitHub authentication"
+grep -Fq 'gh repo clone' <<<"$post_install_output" \
+    || fail "post-install dry run omits the private checkout"
+grep -Fq 'stow --dir' <<<"$post_install_output" \
+    || fail "post-install dry run omits private Git deployment"
 
 printf 'Setup checks passed.\n'

@@ -2,10 +2,11 @@
 
 The public [`lichader/dot`](https://github.com/lichader/dot) repository turns a
 minimal Arch installation into this Hyprland workstation. It contains the
-bootstrap, package manifests, generated system configuration, and desktop
-and application configuration, including IdeaVim. Private Git settings remain
-in the separate `lichader/dot-files` repository and are not required to run the
-public bootstrap.
+bootstrap, package manifests, generated system configuration, and portable
+desktop, application, and Git configuration, including IdeaVim. Git identity
+and work/personal repository routing remain in the separate
+`lichader/dot-files` repository and are not required to run the public
+bootstrap.
 
 The supported standalone interface is safe to rerun:
 
@@ -54,13 +55,16 @@ prompts for its login password. A temporary sudo rule allows that non-root user
 to install packages through pacman while Paru and makepkg run; the rule is
 removed on success or failure.
 
-The public `config` Stow package is deployed automatically. The bootstrap
-deliberately does not fetch the private repository or handle GitHub credentials.
-If an authenticated checkout is already available, place it somewhere the
-target user can read (normally
-`/home/lichader/dot-files`) and pass it through `--dotfiles-dir`. A checkout
-created as root beneath the target user's home is reassigned to that user by
-the bootstrap.
+The public `config` and `git` Stow packages are deployed automatically. The Git
+package contains portable behavior and global ignore rules, then includes the
+optional `~/.gitconfig.private` and `~/.gitconfig.local` overlays. On Linux,
+the bootstrap writes the libsecret credential helper to the untracked local
+overlay. It deliberately does not fetch the private repository or handle
+GitHub credentials. If an authenticated checkout is already available, place
+it somewhere the target user can read (normally `/home/lichader/dot-files`)
+and pass it through `--dotfiles-dir`. A checkout created as root beneath the
+target user's home is reassigned to that user by the bootstrap, and its Git
+package supplies the private identity overlay.
 
 Use a dry run to inspect the planned mutations:
 
@@ -75,9 +79,31 @@ both forms of the dry-run interface with:
 ./linux-bootstrap/check.sh
 ```
 
+## Post-install login
+
+After rebooting and completing the first graphical login, run the interactive
+user-scoped setup without `sudo`:
+
+```bash
+./linux-bootstrap/post-install.sh
+```
+
+The helper authenticates GitHub through its browser flow, configures GitHub's
+credential helper only in the untracked `~/.gitconfig.local`, clones the
+private `lichader/dot-files` repository when absent, Stows its private Git
+identity overlay, and connects Tailscale. Existing checkouts and authenticated
+sessions are reused. Preview the flow or omit Tailscale with:
+
+```bash
+./linux-bootstrap/post-install.sh --dry-run
+./linux-bootstrap/post-install.sh --skip-tailscale
+```
+
 ## What it configures
 
 - Full system upgrade, multilib, Git, sudo, Zsh, and Paru bootstrap
+- System-wide Zsh XDG routing plus persistent completion-cache and history
+  directories for the target user
 - Linux firmware and AMD CPU/GPU Mesa, Vulkan, VA-API, and monitoring tools
 - Hyprland and Noctalia, with Noctalia providing the bar, launcher,
   notifications, wallpaper, clipboard history, idle handling, session lock,
@@ -92,17 +118,17 @@ both forms of the dry-run interface with:
 - Zstd-compressed Zram swap sized to half of system memory with a 16 GiB cap,
   plus virtual-memory tuning for in-memory swap
 - GUI, terminal, development, virtualization, gaming, and AUR applications
-- Public application and desktop configuration via GNU Stow
-- Optional private Git configuration via GNU Stow
+- Public application, desktop, and portable Git configuration via GNU Stow
+- Optional private Git identity and repository routing via a separate overlay
 - Herdr with the pinned Vim/Neovim pane-navigation plugin
 - NVM with the current Node LTS, SDKMAN with Java/Maven/Gradle, pipx tools, and
   Fabric
 
 `tailscaled.service` is enabled for the first boot, but joining the machine to
-a tailnet remains an explicit post-install step:
+a tailnet remains an interactive step performed by the post-install helper:
 
 ```bash
-sudo tailscale up
+./linux-bootstrap/post-install.sh
 ```
 
 The public bootstrap does not store or consume a Tailscale authentication key.

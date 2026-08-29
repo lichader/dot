@@ -9,9 +9,10 @@ runnable instructions in [`README.md`](README.md).
 
 The public repository should turn a minimal, vanilla Arch Linux installation
 into the workstation's Arch and Hyprland foundation with one repeatable
-command. The public `config` Stow package supplies the Linux desktop and shared
-application configuration, including IdeaVim's XDG configuration. Private Git
-settings remain in the separate `lichader/dot-files` repository and can be
+command. The public `config` and `git` Stow packages supply the Linux desktop,
+shared application configuration, portable Git behavior, and global ignore
+rules, including IdeaVim's XDG configuration. Git identity and repository
+routing remain in the separate `lichader/dot-files` repository and can be
 deployed from an authenticated local checkout. The public bootstrap does not
 fetch that repository or manage GitHub credentials.
 
@@ -28,14 +29,18 @@ The two repositories have distinct responsibilities:
 
 - `lichader/dot` is public. It owns the bootstrap scripts, package manifests,
   generated system configuration, validation, wallpapers, and the `config`
-  Stow package for shell, desktop, editor, and application configuration.
-- `lichader/dot-files` is private. It retains the personal `git` Stow package
-  and any configuration that should not be published.
+  and `git` Stow packages for portable shell, desktop, editor, application, and
+  Git configuration.
+- `lichader/dot-files` is private. It retains Git identity, work/personal
+  repository routing, and any configuration that should not be published.
 
-The public bootstrap always Stows its local `config` package. Supplying
-`--dotfiles-dir PATH` additionally Stows the `git` package from the private
-checkout. The path must already exist and be readable; the bootstrap
-deliberately performs no authenticated clone.
+The public bootstrap always Stows its local `config` and `git` packages. The
+public Git configuration includes `~/.gitconfig.private` for identity and
+repository routing plus `~/.gitconfig.local` for machine-specific settings.
+The Linux bootstrap writes its libsecret credential helper to the local file.
+Supplying `--dotfiles-dir PATH` additionally Stows the private Git overlay. The
+path must already exist and be readable; the bootstrap deliberately performs
+no authenticated clone.
 
 ## Installation workflow
 
@@ -85,16 +90,23 @@ private dotfile deployment because the target user must be able to read it.
 System work runs as root:
 
 - Full system upgrade and official package installation with pacman
-- `/etc` configuration, user/group membership, and service enablement
+- `/etc` configuration, including the system Zsh XDG routing, user/group
+  membership, and service enablement
 - Greetd, networking, graphics, Zram, sudo, Docker, and libvirt configuration
 
 User-scoped work runs as the account passed through `--user`:
 
 - Building Paru and AUR packages
-- Stowing the public config and optional private Git package
+- Stowing the public config and Git packages plus optional private Git identity
 - Installing NVM, Node LTS, SDKMAN candidates, pipx tools, Fabric, Codex,
   GitHub Copilot CLI, and the pinned Herdr navigation plugin
 - Updating user directories and fonts
+
+After the first graphical login, `post-install.sh` runs as the daily user. It
+owns browser-based GitHub authentication, the private-dotfiles clone and Git
+overlay deployment, and the interactive Tailscale connection. These steps do
+not run inside the chroot because they depend on a user session and external
+authentication.
 
 A temporary sudoers rule permits the target user to invoke only pacman while
 the bootstrap is active so Paru and makepkg can install packages. The rule is
@@ -136,9 +148,10 @@ disk-backed swap.
 ## Tailscale
 
 The official `tailscale` package is installed and `tailscaled.service` is
-enabled for the first normal boot. Joining the workstation to a tailnet remains
-interactive with `sudo tailscale up`; reusable authentication keys are secrets
-and must not be stored in this public repository.
+enabled for the first normal boot. The user-scoped post-install helper invokes
+`sudo tailscale up` when the workstation is not already connected. Reusable
+authentication keys are secrets and must not be stored in this public
+repository.
 
 ## Login manager
 
@@ -181,11 +194,15 @@ tuigreet login unlocks it automatically. KDE Wallet is not installed or needed.
 
 - Pacman and Paru use `--needed`.
 - Existing users, Paru, SDKMAN, NVM, pipx packages, and user tools are detected.
-- The private Git configuration is included only when it is supplied and the
-  include is absent.
+- The post-install helper reuses authenticated GitHub sessions and existing
+  private checkouts, and skips Tailscale when it is already connected.
+- Machine-local Git settings live in the untracked `~/.gitconfig.local`;
+  identity and repository routing live in the separately Stowed
+  `~/.gitconfig.private`.
 - Generated system files are replaced only when their content differs.
 - Services are enabled only when not already enabled.
-- Stow uses `--restow` for the public config and supplied private packages.
+- Stow uses `--restow` for the public config, public Git, and supplied private
+  packages.
 - Temporary build directories and sudo rules are cleaned on exit.
 
 The bootstrap may still stop on a genuine conflict, such as an existing user
@@ -198,9 +215,10 @@ a portable alternative exists. The Linux bootstrap excludes macOS-only config
 directories from Stow, wallpapers use home-relative paths, and generated Zsh
 completion dumps and backup Hyprland configuration are ignored.
 
-The public bootstrap must refer to the private checkout only through the path
-supplied with `--dotfiles-dir`; it must not duplicate or publish private Git
-configuration.
+The public Git package must remain free of identity, credential helpers, and
+repository-specific include conditions. The bootstrap must refer to the
+private checkout only through the path supplied with `--dotfiles-dir`; it must
+not duplicate or publish private Git configuration.
 
 ## Security and repository hygiene
 
@@ -227,9 +245,9 @@ git diff --check
 
 `linux-bootstrap/check.sh` validates shell syntax, runs ShellCheck when
 available, checks package-list invariants and official package availability,
-checks AUR availability when Paru is installed, checks that the public config
-package is present, and exercises dry runs with and without a private dotfiles
-directory.
+checks AUR availability when Paru is installed, validates that the public Git
+package contains no private keys, verifies the essential Zsh/XDG setup, and
+exercises dry runs with and without a private dotfiles directory.
 
 For public Neovim changes, also run:
 
