@@ -132,7 +132,6 @@ CLI_PACKAGES=(
     htop
     less
     rust
-    socat
     ueberzugpp
 )
 

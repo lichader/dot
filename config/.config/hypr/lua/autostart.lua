@@ -47,9 +47,6 @@ hl.on("hyprland.start", function()
 	-- Wi-Fi / keyring
 	hl.exec_cmd("/usr/bin/gnome-keyring-daemon --start --components=secrets")
 
-	-- Monitor fix script
-	hl.exec_cmd("~/.config/hypr/scripts/monitor-fix.sh")
-
 	-- Apps pinned to workspaces.
 	-- The "[workspace N silent]" prefix is parsed by Hyprland as a rule for the
 	-- launched window, identical to the old hyprlang syntax.
