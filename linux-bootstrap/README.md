@@ -45,17 +45,17 @@ services inside the chroot.
 
 ## Minimal installation workflow
 
-Complete the normal Arch installation through mounting the target filesystems,
-installing `base`, a kernel, firmware, generating `fstab`, and entering the new
-installation:
+Complete Archinstall, then choose its option to chroot into the installed
+system. If Archinstall has already returned to the live ISO shell while the
+target filesystems remain mounted, enter the new installation manually:
 
 ```bash
 arch-chroot /mnt
 ```
 
-Configure the locale, timezone, hostname, root password, and bootloader as part
-of the base Arch installation. Then fetch the public setup repository over
-HTTPS and run the bootstrap as root:
+Archinstall should already have configured the locale, timezone, hostname,
+user, and bootloader. Inside the chroot, remain logged in as root, fetch the
+public setup repository over HTTPS, and run the bootstrap:
 
 ```bash
 pacman -Syu --needed git go-yq
