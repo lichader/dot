@@ -163,11 +163,12 @@ for expected_path in \
         || fail "bootstrap omits essential Zsh setup path: $expected_path"
 done
 
-for agent_installer in \
+for tool_installer in \
     https://chatgpt.com/codex/install.sh \
-    https://claude.ai/install.sh; do
-    grep -Fq "$agent_installer" <<<"$DRY_RUN_OUTPUT" \
-        || fail "bootstrap omits coding-agent installer: $agent_installer"
+    https://claude.ai/install.sh \
+    https://raw.githubusercontent.com/danielmiessler/fabric/main/scripts/installer/install.sh; do
+    grep -Fq "$tool_installer" <<<"$DRY_RUN_OUTPUT" \
+        || fail "bootstrap omits user-tool installer: $tool_installer"
 done
 
 DOTFILES_FIXTURE="$(mktemp -d)"

@@ -136,9 +136,8 @@ sessions are reused. Preview the flow or omit Tailscale with:
 - Public application, desktop, and portable Git configuration via GNU Stow
 - Optional private Git identity and repository routing via a separate overlay
 - Herdr with the pinned Vim/Neovim pane-navigation plugin
-- Codex and Claude Code from their standalone upstream installers
-- NVM with the current Node LTS, SDKMAN with Java/Maven/Gradle, pipx tools, and
-  Fabric
+- Codex, Claude Code, and Fabric from their standalone upstream installers
+- NVM with the current Node LTS, SDKMAN with Java/Maven/Gradle, and pipx tools
 
 `tailscaled.service` is enabled for the first boot, but joining the machine to
 a tailnet remains an interactive step performed by the post-install helper:
@@ -159,9 +158,10 @@ Official packages come from configured Arch repositories. AUR packages execute
 community-maintained `PKGBUILD` files as the daily user, with review prompts
 disabled for automation. Review `packages.yaml`,
 `linux-bootstrap/lib/packages.sh`, and `linux-bootstrap/fonts.sh` before running
-them on a new machine. Codex, Claude Code, NVM, and SDKMAN use their upstream
-installers; existing installations and configured candidates are checked before
-rerunning. Codex and Claude authentication remains interactive on first use.
+them on a new machine. Codex, Claude Code, Fabric, NVM, and SDKMAN use their
+upstream installers; existing installations and configured candidates are
+checked before rerunning. Agent and provider authentication remains interactive
+on first use.
 
 The private repository is an independent trust boundary. This public bootstrap
 only reads its Git package when its path is explicitly supplied.

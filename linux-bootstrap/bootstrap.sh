@@ -371,9 +371,16 @@ install_user_tools() {
         printf '  Claude Code is already installed.\n'
     fi
 
+    if [[ ! -x "$TARGET_HOME/.local/bin/fabric" ]]; then
+        as_target_shell "set -o pipefail; curl -fsSL https://raw.githubusercontent.com/danielmiessler/fabric/main/scripts/installer/install.sh | bash"
+    else
+        printf '  Fabric is already installed.\n'
+    fi
+
     if [[ "$DRY_RUN" != true ]]; then
         as_target_user "$TARGET_HOME/.local/bin/codex" --version >/dev/null
         as_target_user "$TARGET_HOME/.local/bin/claude" --version >/dev/null
+        as_target_user "$TARGET_HOME/.local/bin/fabric" --version >/dev/null
     fi
 
     if [[ ! -s "$TARGET_HOME/.nvm/nvm.sh" ]]; then
@@ -415,13 +422,6 @@ install_user_tools() {
             printf '  pipx package %s is already installed.\n' "${candidate%%==*}"
         fi
     done
-
-    if [[ ! -x "$TARGET_HOME/.local/bin/fabric" ]]; then
-        as_target_user env GOBIN="$TARGET_HOME/.local/bin" \
-            go install github.com/danielmiessler/fabric/cmd/fabric@latest
-    else
-        printf '  Fabric is already installed.\n'
-    fi
 
     as_target_user xdg-user-dirs-update
 }
