@@ -359,6 +359,23 @@ install_user_tools() {
 
     log "Installing user-scoped development tools"
 
+    if [[ ! -x "$TARGET_HOME/.local/bin/codex" ]]; then
+        as_target_shell "set -o pipefail; curl -fsSL https://chatgpt.com/codex/install.sh | sh"
+    else
+        printf '  Codex is already installed.\n'
+    fi
+
+    if [[ ! -x "$TARGET_HOME/.local/bin/claude" ]]; then
+        as_target_shell "set -o pipefail; curl -fsSL https://claude.ai/install.sh | bash"
+    else
+        printf '  Claude Code is already installed.\n'
+    fi
+
+    if [[ "$DRY_RUN" != true ]]; then
+        as_target_user "$TARGET_HOME/.local/bin/codex" --version >/dev/null
+        as_target_user "$TARGET_HOME/.local/bin/claude" --version >/dev/null
+    fi
+
     if [[ ! -s "$TARGET_HOME/.nvm/nvm.sh" ]]; then
         as_target_shell "curl -fsSL 'https://raw.githubusercontent.com/nvm-sh/nvm/v$nvm_version/install.sh' | env PROFILE=/dev/null NVM_DIR='$TARGET_HOME/.nvm' bash"
     else
@@ -369,10 +386,6 @@ install_user_tools() {
 
     if ! as_target_shell "export NVM_DIR='$TARGET_HOME/.nvm'; source \"\$NVM_DIR/nvm.sh\"; command -v copilot >/dev/null"; then
         as_target_shell "export NVM_DIR='$TARGET_HOME/.nvm'; source \"\$NVM_DIR/nvm.sh\"; npm install --global @github/copilot"
-    fi
-
-    if ! as_target_shell "export NVM_DIR='$TARGET_HOME/.nvm'; source \"\$NVM_DIR/nvm.sh\"; command -v codex >/dev/null"; then
-        as_target_shell "export NVM_DIR='$TARGET_HOME/.nvm'; source \"\$NVM_DIR/nvm.sh\"; npm install --global @openai/codex"
     fi
 
     if [[ ! -s "$TARGET_HOME/.sdkman/bin/sdkman-init.sh" ]]; then

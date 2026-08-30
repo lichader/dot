@@ -149,7 +149,7 @@ fi
 
 printf 'Checking the public bootstrap interface...\n'
 DRY_RUN_OUTPUT="$(
-    "$SCRIPT_DIR/bootstrap.sh" --user "${SUDO_USER:-${USER:-lichader}}" --dry-run
+    "$SCRIPT_DIR/bootstrap.sh" --user dot_bootstrap_check --dry-run
 )"
 
 for expected_path in \
@@ -161,6 +161,13 @@ for expected_path in \
     /.local/state/zsh; do
     grep -Fq "$expected_path" <<<"$DRY_RUN_OUTPUT" \
         || fail "bootstrap omits essential Zsh setup path: $expected_path"
+done
+
+for agent_installer in \
+    https://chatgpt.com/codex/install.sh \
+    https://claude.ai/install.sh; do
+    grep -Fq "$agent_installer" <<<"$DRY_RUN_OUTPUT" \
+        || fail "bootstrap omits coding-agent installer: $agent_installer"
 done
 
 DOTFILES_FIXTURE="$(mktemp -d)"
