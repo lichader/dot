@@ -84,9 +84,18 @@ for git_overlay in '~/.gitconfig.private' '~/.gitconfig.local'; do
 done
 
 STOW_FIXTURE="$(mktemp -d)"
-stow --dir "$SCRIPT_DIR/.." --target "$STOW_FIXTURE" --no-folding git
+mkdir -p "$STOW_FIXTURE/.config"
+stow \
+    --dir "$SCRIPT_DIR/.." \
+    --target "$STOW_FIXTURE" \
+    --ignore='^\.config/(aerospace|borders|karabiner|sketchybar|skhd|spacebar|yabai)(/|$)' \
+    --ignore='^\.config/hypr/.*\.bak$' \
+    --ignore='^\.config/zsh/\.zcompdump' \
+    config git
 [[ -L "$STOW_FIXTURE/.gitconfig" && -L "$STOW_FIXTURE/.gitignore" ]] \
     || fail "public Git Stow package does not deploy both global files"
+[[ -L "$STOW_FIXTURE/.config/hypr" && -L "$STOW_FIXTURE/.config/noctalia" ]] \
+    || fail "public config Stow package does not fold application directories"
 
 duplicates="$(
     printf '%s\n' \
@@ -157,7 +166,7 @@ done
 DOTFILES_FIXTURE="$(mktemp -d)"
 mkdir -p "$DOTFILES_FIXTURE/git"
 touch "$DOTFILES_FIXTURE/git/.gitconfig.private"
-stow --dir "$DOTFILES_FIXTURE" --target "$STOW_FIXTURE" --no-folding git
+stow --dir "$DOTFILES_FIXTURE" --target "$STOW_FIXTURE" git
 [[ -L "$STOW_FIXTURE/.gitconfig.private" ]] \
     || fail "private Git overlay cannot be Stowed alongside the public package"
 "$SCRIPT_DIR/bootstrap.sh" \

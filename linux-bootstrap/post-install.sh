@@ -150,7 +150,6 @@ deploy_private_git() {
             --dir "$DOTFILES_DIR" \
             --target "$HOME" \
             --restow \
-            --no-folding \
             git
         return 0
     fi
@@ -162,7 +161,6 @@ deploy_private_git() {
         --dir "$DOTFILES_DIR" \
         --target "$HOME" \
         --restow \
-        --no-folding \
         git
 
     [[ -L "$HOME/.gitconfig.private" || -f "$HOME/.gitconfig.private" ]] \

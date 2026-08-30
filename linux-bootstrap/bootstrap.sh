@@ -319,7 +319,6 @@ deploy_user_configuration() {
         --dir "$REPO_ROOT" \
         --target "$TARGET_HOME" \
         --restow \
-        --no-folding \
         --ignore='^\.config/(aerospace|borders|karabiner|sketchybar|skhd|spacebar|yabai)(/|$)' \
         --ignore='^\.config/hypr/.*\.bak$' \
         --ignore='^\.config/zsh/\.zcompdump' \
@@ -335,7 +334,6 @@ deploy_user_configuration() {
             --dir "$DOTFILES_ROOT" \
             --target "$TARGET_HOME" \
             --restow \
-            --no-folding \
             git
 
     else
