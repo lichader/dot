@@ -153,7 +153,6 @@ GAMING_PACKAGES=(
 SYSTEM_UTILITY_PACKAGES=(
     liquidctl
     smartmontools
-    timeshift
     tuned
     v4l2loopback-dkms
 )
