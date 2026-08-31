@@ -105,10 +105,10 @@ User-scoped work runs as the account passed through `--user`:
 - Updating user directories and fonts
 
 After the first graphical login, `post-install.sh` runs as the daily user. It
-owns browser-based GitHub authentication, the private post-setup checkout and
-Git overlay deployment, and the interactive Tailscale connection. These steps
-do not run inside the chroot because they depend on a user session and external
-authentication.
+owns the interactive Tailscale connection, browser-based GitHub authentication,
+the private post-setup checkout, and Git overlay deployment, in that order.
+These steps do not run inside the chroot because they depend on a user session
+and external authentication.
 
 After the first normal boot, `post-check.sh` provides a read-only validation of
 the expected EFI partition, Btrfs subvolume mounts and Zstd compression, the

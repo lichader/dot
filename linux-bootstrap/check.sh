@@ -188,8 +188,10 @@ stow --dir "$DOTFILES_FIXTURE" --target "$STOW_FIXTURE" git
 POST_INSTALL_FIXTURE="$(mktemp -d)"
 post_install_output="$(
     HOME="$POST_INSTALL_FIXTURE" \
-        "$SCRIPT_DIR/post-install.sh" --dry-run --skip-tailscale
+        "$SCRIPT_DIR/post-install.sh" --dry-run
 )"
+grep -Fq 'sudo tailscale up' <<<"$post_install_output" \
+    || fail "post-install dry run omits the Tailscale connection"
 grep -Fq 'gh auth login' <<<"$post_install_output" \
     || fail "post-install dry run omits GitHub authentication"
 grep -Fq 'gh repo clone' <<<"$post_install_output" \
@@ -198,5 +200,10 @@ grep -Fq 'lichader/post-setup-config' <<<"$post_install_output" \
     || fail "post-install dry run omits the post-setup repository"
 grep -Fq 'stow --dir' <<<"$post_install_output" \
     || fail "post-install dry run omits private Git deployment"
+
+tailscale_line="$(grep -nFm1 'sudo tailscale up' <<<"$post_install_output")"
+clone_line="$(grep -nFm1 'gh repo clone' <<<"$post_install_output")"
+[[ "${tailscale_line%%:*}" -lt "${clone_line%%:*}" ]] \
+    || fail "post-install must connect Tailscale before cloning private configuration"
 
 printf 'Setup checks passed.\n'

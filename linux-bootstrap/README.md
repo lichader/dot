@@ -104,11 +104,12 @@ user-scoped setup without `sudo`:
 ./linux-bootstrap/post-install.sh
 ```
 
-The helper authenticates GitHub through its browser flow, configures GitHub's
-credential helper only in the untracked `~/.gitconfig.local`, clones the
-private `lichader/post-setup-config` repository when absent, Stows its private
-Git identity overlay, and connects Tailscale. Existing checkouts and
-authenticated sessions are reused. Preview the flow or omit Tailscale with:
+The helper connects Tailscale first, authenticates GitHub through its browser
+flow, configures GitHub's credential helper only in the untracked
+`~/.gitconfig.local`, clones the private `lichader/post-setup-config`
+repository when absent, and Stows its private Git identity overlay. Existing
+connections, checkouts, and authenticated sessions are reused. Preview the flow
+or omit Tailscale with:
 
 ```bash
 ./linux-bootstrap/post-install.sh --dry-run

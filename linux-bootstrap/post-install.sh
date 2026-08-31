@@ -182,15 +182,20 @@ deploy_private_config() {
 
 connect_tailscale() {
     [[ "$SKIP_TAILSCALE" == false ]] || return 0
-    command -v tailscale >/dev/null 2>&1 || return 0
 
     printf '\nTailscale\n'
-    if [[ "$DRY_RUN" != true ]] && tailscale status >/dev/null 2>&1; then
+    if [[ "$DRY_RUN" == true ]]; then
+        print_command sudo tailscale up
+        return 0
+    fi
+
+    command -v tailscale >/dev/null 2>&1 || return 0
+    if tailscale status >/dev/null 2>&1; then
         printf '  Tailscale is already connected.\n'
         return 0
     fi
 
-    run sudo tailscale up
+    sudo tailscale up
 }
 
 main() {
@@ -202,9 +207,9 @@ main() {
     printf '  Checkout: %s\n' "$PRIVATE_CONFIG_DIR"
     [[ "$DRY_RUN" == true ]] && printf '  Mode: dry run\n'
 
+    connect_tailscale
     configure_github
     deploy_private_config
-    connect_tailscale
 
     printf '\nPost-install setup complete.\n'
 }
