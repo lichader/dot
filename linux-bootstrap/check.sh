@@ -38,6 +38,7 @@ printf 'Checking shell syntax...\n'
 for script in \
     "$SCRIPT_DIR/bootstrap.sh" \
     "$SCRIPT_DIR/fonts.sh" \
+    "$SCRIPT_DIR/post-check.sh" \
     "$SCRIPT_DIR/post-install.sh" \
     "$SCRIPT_DIR/lib/"*.sh \
     "$SCRIPT_DIR/../lib/"*.sh \
@@ -50,6 +51,7 @@ if command -v shellcheck >/dev/null 2>&1; then
     shellcheck \
         "$SCRIPT_DIR/bootstrap.sh" \
         "$SCRIPT_DIR/fonts.sh" \
+        "$SCRIPT_DIR/post-check.sh" \
         "$SCRIPT_DIR/post-install.sh" \
         "$SCRIPT_DIR/lib/"*.sh \
         "$SCRIPT_DIR/../lib/"*.sh \

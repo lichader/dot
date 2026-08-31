@@ -44,12 +44,14 @@ After the first graphical login, run the user-scoped setup without `sudo`:
 ```bash
 cd ~/dot
 ./linux-bootstrap/post-install.sh
+./linux-bootstrap/post-check.sh
 ```
 
-This final step authenticates GitHub, retrieves the private dotfiles, and
-connects Tailscale. Private SSH keys are not required to run the public
-bootstrap. See [linux-bootstrap/README.md](linux-bootstrap/README.md) for the
-full workflow.
+The post-install helper authenticates GitHub, retrieves the private dotfiles,
+and connects Tailscale. The read-only post-check reports and verifies the EFI,
+Btrfs subvolume, Zstd compression, disk swap, and Zram layout. Private SSH keys
+are not required to run the public bootstrap. See
+[linux-bootstrap/README.md](linux-bootstrap/README.md) for the full workflow.
 
 Preview the bootstrap before applying it:
 

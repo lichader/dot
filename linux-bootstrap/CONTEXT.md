@@ -109,6 +109,11 @@ overlay deployment, and the interactive Tailscale connection. These steps do
 not run inside the chroot because they depend on a user session and external
 authentication.
 
+After the first normal boot, `post-check.sh` provides a read-only validation of
+the expected EFI partition, Btrfs subvolume mounts and Zstd compression, the
+disk-backed swap partition, and Zram. It reports deviations and exits nonzero
+without modifying the installed system.
+
 A temporary sudoers rule permits the target user to invoke only pacman while
 the bootstrap is active so Paru and makepkg can install packages. The rule is
 removed on both successful and failed exits. Services are enabled without
@@ -254,7 +259,8 @@ available, checks the shared and Arch-only package-list invariants and official
 package availability, checks AUR availability when Paru is installed, validates
 that the public Git package contains no private keys, verifies the essential
 Zsh/XDG setup, and exercises dry runs with and without a private dotfiles
-directory.
+directory. `linux-bootstrap/post-check.sh` separately validates the live storage
+layout after boot and is not executed by the repository test suite.
 
 For public Neovim changes, also run:
 

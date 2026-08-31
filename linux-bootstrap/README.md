@@ -114,6 +114,27 @@ sessions are reused. Preview the flow or omit Tailscale with:
 ./linux-bootstrap/post-install.sh --skip-tailscale
 ```
 
+## Post-install verification
+
+After rebooting into the installed system, inspect and validate the storage
+layout without making any changes:
+
+```bash
+./linux-bootstrap/post-check.sh
+```
+
+The checker verifies the `/boot` EFI system partition, the `@`, `@home`,
+`@log`, and `@pkg` Btrfs mounts, Zstd mount compression, the disk-backed swap
+partition, and Zram. It prints the detected layout and exits nonzero when a
+required check fails. To inspect the same information manually, use:
+
+```bash
+lsblk --output NAME,PATH,TYPE,SIZE,FSTYPE,FSVER,PARTTYPENAME,MOUNTPOINTS
+findmnt --real --output TARGET,SOURCE,FSTYPE,FSROOT,OPTIONS
+swapon --show=NAME,TYPE,SIZE,USED,PRIO
+zramctl
+```
+
 ## What it configures
 
 - Full system upgrade, multilib, Git, sudo, Zsh, go-yq, and Paru bootstrap
