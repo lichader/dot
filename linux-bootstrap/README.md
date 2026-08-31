@@ -5,7 +5,7 @@ minimal Arch installation into this Hyprland workstation. It contains the
 bootstrap, package manifests, generated system configuration, and portable
 desktop, application, and Git configuration, including IdeaVim. Git identity
 and work/personal repository routing remain in the separate
-`lichader/dot-files` repository and are not required to run the public
+`lichader/post-setup-config` repository and are not required to run the public
 bootstrap.
 
 The supported standalone interface is safe to rerun:
@@ -35,7 +35,7 @@ should also be deployed:
 ```bash
 ./linux-bootstrap/bootstrap.sh \
     --user lichader \
-    --dotfiles-dir /home/lichader/dot-files
+    --dotfiles-dir /home/lichader/post-setup-config
 ```
 
 The implementation installs only missing packages, checks before cloning or
@@ -75,11 +75,12 @@ package contains portable behavior and global ignore rules, then includes the
 optional `~/.gitconfig.private` and `~/.gitconfig.local` overlays. On Linux,
 the bootstrap writes the libsecret credential helper to the untracked local
 overlay. It deliberately does not fetch the private repository or handle
-GitHub credentials. If an authenticated checkout is already available, place
-it somewhere the target user can read (normally `/home/lichader/dot-files`)
-and pass it through `--dotfiles-dir`. A checkout created as root beneath the
-target user's home is reassigned to that user by the bootstrap, and its Git
-package supplies the private identity overlay.
+GitHub credentials. If an authenticated checkout is already available, place it
+somewhere the target user can read (normally
+`/home/lichader/post-setup-config`) and pass it through `--dotfiles-dir`. A
+checkout created as root beneath the target user's home is reassigned to that
+user by the bootstrap, and its Git package supplies the private identity
+overlay.
 
 Use a dry run to inspect the planned mutations:
 
@@ -105,9 +106,9 @@ user-scoped setup without `sudo`:
 
 The helper authenticates GitHub through its browser flow, configures GitHub's
 credential helper only in the untracked `~/.gitconfig.local`, clones the
-private `lichader/dot-files` repository when absent, Stows its private Git
-identity overlay, and connects Tailscale. Existing checkouts and authenticated
-sessions are reused. Preview the flow or omit Tailscale with:
+private `lichader/post-setup-config` repository when absent, Stows its private
+Git identity overlay, and connects Tailscale. Existing checkouts and
+authenticated sessions are reused. Preview the flow or omit Tailscale with:
 
 ```bash
 ./linux-bootstrap/post-install.sh --dry-run

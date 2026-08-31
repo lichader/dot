@@ -194,6 +194,8 @@ grep -Fq 'gh auth login' <<<"$post_install_output" \
     || fail "post-install dry run omits GitHub authentication"
 grep -Fq 'gh repo clone' <<<"$post_install_output" \
     || fail "post-install dry run omits the private checkout"
+grep -Fq 'lichader/post-setup-config' <<<"$post_install_output" \
+    || fail "post-install dry run omits the post-setup repository"
 grep -Fq 'stow --dir' <<<"$post_install_output" \
     || fail "post-install dry run omits private Git deployment"
 

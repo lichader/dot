@@ -2,8 +2,8 @@
 
 set -Eeuo pipefail
 
-PRIVATE_REPOSITORY="lichader/dot-files"
-DOTFILES_DIR="$HOME/dot-files"
+PRIVATE_REPOSITORY="lichader/post-setup-config"
+PRIVATE_CONFIG_DIR="$HOME/post-setup-config"
 LOCAL_GIT_CONFIG="$HOME/.gitconfig.local"
 DRY_RUN=false
 SKIP_TAILSCALE=false
@@ -15,11 +15,11 @@ Usage: linux-bootstrap/post-install.sh [options]
 Finish the interactive, user-scoped workstation setup after the first login.
 
 Options:
-  --dotfiles-dir PATH  Private dotfiles checkout (default: ~/dot-files)
-  --repo OWNER/REPO    Private GitHub repository (default: lichader/dot-files)
-  --skip-tailscale     Do not connect Tailscale
-  --dry-run            Print planned mutations without performing them
-  -h, --help           Show this help
+  --config-dir PATH   Private configuration checkout (default: ~/post-setup-config)
+  --repo OWNER/REPO   Private repository (default: lichader/post-setup-config)
+  --skip-tailscale    Do not connect Tailscale
+  --dry-run           Print planned mutations without performing them
+  -h, --help          Show this help
 
 Run this script as the normal desktop user, not as root.
 EOF
@@ -48,9 +48,9 @@ run() {
 parse_arguments() {
     while (($# > 0)); do
         case "$1" in
-            --dotfiles-dir)
-                (($# >= 2)) || die "--dotfiles-dir requires a path."
-                DOTFILES_DIR="$2"
+            --config-dir)
+                (($# >= 2)) || die "--config-dir requires a path."
+                PRIVATE_CONFIG_DIR="$2"
                 shift 2
                 ;;
             --repo)
@@ -95,9 +95,10 @@ validate_environment() {
         require_command stow
     fi
 
-    DOTFILES_DIR="$(realpath -m -- "$DOTFILES_DIR")"
-    [[ "$DOTFILES_DIR" != "$HOME" && "$DOTFILES_DIR/" == "$HOME/"* ]] \
-        || die "Keep the private checkout beneath your home directory: $DOTFILES_DIR"
+    PRIVATE_CONFIG_DIR="$(realpath -m -- "$PRIVATE_CONFIG_DIR")"
+    [[ "$PRIVATE_CONFIG_DIR" != "$HOME" && "$PRIVATE_CONFIG_DIR/" == "$HOME/"* ]] \
+        || die \
+            "Keep the private checkout beneath your home directory: $PRIVATE_CONFIG_DIR"
 }
 
 configure_github() {
@@ -122,10 +123,10 @@ configure_github() {
 validate_existing_checkout() {
     local origin
 
-    [[ -d "$DOTFILES_DIR/.git" ]] \
-        || die "Existing path is not a Git checkout: $DOTFILES_DIR"
+    [[ -d "$PRIVATE_CONFIG_DIR/.git" ]] \
+        || die "Existing path is not a Git checkout: $PRIVATE_CONFIG_DIR"
 
-    origin="$(git -C "$DOTFILES_DIR" remote get-url origin 2>/dev/null || true)"
+    origin="$(git -C "$PRIVATE_CONFIG_DIR" remote get-url origin 2>/dev/null || true)"
     case "$origin" in
         "git@github.com:$PRIVATE_REPOSITORY.git" \
         | "https://github.com/$PRIVATE_REPOSITORY" \
@@ -135,36 +136,48 @@ validate_existing_checkout() {
     esac
 }
 
-deploy_private_git() {
-    printf '\nPrivate Git configuration\n'
+deploy_private_config() {
+    local private_git_file=""
 
-    if [[ -e "$DOTFILES_DIR" ]]; then
+    printf '\nPrivate post-setup configuration\n'
+
+    if [[ -e "$PRIVATE_CONFIG_DIR" ]]; then
         validate_existing_checkout
         printf '  Private repository is already cloned.\n'
     else
-        run gh repo clone "$PRIVATE_REPOSITORY" "$DOTFILES_DIR"
+        run gh repo clone "$PRIVATE_REPOSITORY" "$PRIVATE_CONFIG_DIR"
     fi
 
     if [[ "$DRY_RUN" == true ]]; then
         print_command stow \
-            --dir "$DOTFILES_DIR" \
+            --dir "$PRIVATE_CONFIG_DIR" \
             --target "$HOME" \
             --restow \
             git
         return 0
     fi
 
-    [[ -f "$DOTFILES_DIR/git/.gitconfig.private" ]] \
-        || die "Private checkout is missing git/.gitconfig.private."
+    for private_git_file in \
+        .gitconfig.private \
+        .gitconfig_personal \
+        .gitconfig_work; do
+        [[ -f "$PRIVATE_CONFIG_DIR/git/$private_git_file" ]] \
+            || die "Private checkout is missing git/$private_git_file."
+    done
 
     stow \
-        --dir "$DOTFILES_DIR" \
+        --dir "$PRIVATE_CONFIG_DIR" \
         --target "$HOME" \
         --restow \
         git
 
-    [[ -L "$HOME/.gitconfig.private" || -f "$HOME/.gitconfig.private" ]] \
-        || die "Private Git configuration was not deployed."
+    for private_git_file in \
+        .gitconfig.private \
+        .gitconfig_personal \
+        .gitconfig_work; do
+        [[ -L "$HOME/$private_git_file" || -f "$HOME/$private_git_file" ]] \
+            || die "Private Git configuration was not deployed: $private_git_file"
+    done
 }
 
 connect_tailscale() {
@@ -186,11 +199,11 @@ main() {
 
     printf 'Post-install workstation setup\n'
     printf '  Private repository: %s\n' "$PRIVATE_REPOSITORY"
-    printf '  Checkout: %s\n' "$DOTFILES_DIR"
+    printf '  Checkout: %s\n' "$PRIVATE_CONFIG_DIR"
     [[ "$DRY_RUN" == true ]] && printf '  Mode: dry run\n'
 
     configure_github
-    deploy_private_git
+    deploy_private_config
     connect_tailscale
 
     printf '\nPost-install setup complete.\n'

@@ -47,10 +47,10 @@ cd ~/dot
 ./linux-bootstrap/post-check.sh
 ```
 
-The post-install helper authenticates GitHub, retrieves the private dotfiles,
-and connects Tailscale. The read-only post-check reports and verifies the EFI,
-Btrfs subvolume, Zstd compression, disk swap, and Zram layout. Private SSH keys
-are not required to run the public bootstrap. See
+The post-install helper authenticates GitHub, retrieves the private post-setup
+configuration, and connects Tailscale. The read-only post-check reports and
+verifies the EFI, Btrfs subvolume, Zstd compression, disk swap, and Zram layout.
+Private SSH keys are not required to run the public bootstrap. See
 [linux-bootstrap/README.md](linux-bootstrap/README.md) for the full workflow.
 
 Preview the bootstrap before applying it:

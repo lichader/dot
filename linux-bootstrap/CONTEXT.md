@@ -12,9 +12,9 @@ into the workstation's Arch and Hyprland foundation with one repeatable
 command. The public `config` and `git` Stow packages supply the Linux desktop,
 shared application configuration, portable Git behavior, and global ignore
 rules, including IdeaVim's XDG configuration. Git identity and repository
-routing remain in the separate `lichader/dot-files` repository and can be
-deployed from an authenticated local checkout. The public bootstrap does not
-fetch that repository or manage GitHub credentials.
+routing remain in the separate `lichader/post-setup-config` repository and can
+be deployed from an authenticated local checkout. The public bootstrap does
+not fetch that repository or manage GitHub credentials.
 
 `linux-bootstrap/bootstrap.sh` intentionally supports Arch Linux only. The
 public config package may contain cross-platform and macOS application settings,
@@ -31,8 +31,9 @@ The two repositories have distinct responsibilities:
   generated system configuration, validation, wallpapers, and the `config`
   and `git` Stow packages for portable shell, desktop, editor, application, and
   Git configuration.
-- `lichader/dot-files` is private. It retains Git identity, work/personal
-  repository routing, and any configuration that should not be published.
+- `lichader/post-setup-config` is private. It retains Git identity,
+  work/personal repository routing, and any configuration that should not be
+  published.
 
 The public bootstrap always Stows its local `config` and `git` packages. The
 public Git configuration includes `~/.gitconfig.private` for identity and
@@ -70,7 +71,7 @@ checkout of the private repository available, then pass it explicitly:
 ```bash
 ./linux-bootstrap/bootstrap.sh \
     --user lichader \
-    --dotfiles-dir /home/lichader/dot-files
+    --dotfiles-dir /home/lichader/post-setup-config
 ```
 
 Running the bootstrap as root inside `arch-chroot` is required and expected.
@@ -104,9 +105,9 @@ User-scoped work runs as the account passed through `--user`:
 - Updating user directories and fonts
 
 After the first graphical login, `post-install.sh` runs as the daily user. It
-owns browser-based GitHub authentication, the private-dotfiles clone and Git
-overlay deployment, and the interactive Tailscale connection. These steps do
-not run inside the chroot because they depend on a user session and external
+owns browser-based GitHub authentication, the private post-setup checkout and
+Git overlay deployment, and the interactive Tailscale connection. These steps
+do not run inside the chroot because they depend on a user session and external
 authentication.
 
 After the first normal boot, `post-check.sh` provides a read-only validation of
@@ -258,9 +259,9 @@ git diff --check
 available, checks the shared and Arch-only package-list invariants and official
 package availability, checks AUR availability when Paru is installed, validates
 that the public Git package contains no private keys, verifies the essential
-Zsh/XDG setup, and exercises dry runs with and without a private dotfiles
-directory. `linux-bootstrap/post-check.sh` separately validates the live storage
-layout after boot and is not executed by the repository test suite.
+Zsh/XDG setup, and exercises dry runs with and without a private configuration
+directory. `linux-bootstrap/post-check.sh` separately validates the live
+storage layout after boot and is not executed by the repository test suite.
 
 For public Neovim changes, also run:
 
