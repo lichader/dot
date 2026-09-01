@@ -19,6 +19,19 @@ TARGET_GROUP=""
 DOTFILES_ROOT=""
 TEMP_SUDOERS=""
 PARU_BUILD_DIR=""
+MKINITCPIO_CONFIG_PATH="${MKINITCPIO_CONFIG_PATH:-/etc/mkinitcpio.conf}"
+PLYMOUTH_CONFIG_PATH="${PLYMOUTH_CONFIG_PATH:-/etc/plymouth/plymouthd.conf}"
+SYSTEMD_BOOT_ENTRIES_DIR="${SYSTEMD_BOOT_ENTRIES_DIR:-/boot/loader/entries}"
+
+QUIET_BOOT_PARAMETERS=(
+    quiet
+    splash
+    loglevel=3
+    systemd.show_status=auto
+    udev.log_level=3
+    rd.udev.log_level=3
+    vt.global_cursor_default=0
+)
 
 usage() {
     cat <<'EOF'
@@ -226,6 +239,109 @@ install_workstation_packages() {
 
     log "Installing configured workstation packages from the AUR"
     paru_install "${AUR_PACKAGES[@]}" "${shared_aur_packages[@]}"
+}
+
+configure_boot_splash() {
+    local boot_entry
+    local current_theme=""
+    local hook_anchor=""
+    local hooks_line
+    local normalized_options
+    local options_line
+    local parameter
+    local systemd_boot_entry_found=false
+    local boot_entries=()
+    local missing_parameters=()
+
+    log "Configuring the Plymouth boot splash"
+
+    [[ -f "$MKINITCPIO_CONFIG_PATH" ]] \
+        || die "Missing mkinitcpio configuration: $MKINITCPIO_CONFIG_PATH"
+
+    hooks_line="$(grep -Em1 '^[[:space:]]*HOOKS=' "$MKINITCPIO_CONFIG_PATH" || true)"
+    [[ -n "$hooks_line" ]] \
+        || die "Could not find HOOKS in $MKINITCPIO_CONFIG_PATH"
+
+    if grep -Eq '(^|[=([:space:]])plymouth([)[:space:]]|$)' <<<"$hooks_line"; then
+        printf '  Plymouth is already present in the mkinitcpio hooks.\n'
+    else
+        for hook_anchor in udev systemd; do
+            if grep -Eq "(^|[=([:space:]])$hook_anchor([)[:space:]]|$)" \
+                <<<"$hooks_line"; then
+                break
+            fi
+            hook_anchor=""
+        done
+
+        [[ -n "$hook_anchor" ]] \
+            || die "Add either the udev or systemd hook to $MKINITCPIO_CONFIG_PATH before Plymouth."
+
+        run sed -i -E \
+            "/^[[:space:]]*HOOKS=/ s/\\<$hook_anchor\\>/$hook_anchor plymouth/" \
+            "$MKINITCPIO_CONFIG_PATH"
+    fi
+
+    if [[ -f "$PLYMOUTH_CONFIG_PATH" ]]; then
+        current_theme="$(
+            sed -nE \
+                's/^[[:space:]]*Theme[[:space:]]*=[[:space:]]*([^[:space:]#]+).*$/\1/p' \
+                "$PLYMOUTH_CONFIG_PATH" \
+                | head -n 1
+        )"
+    fi
+
+    if [[ "$current_theme" == script ]]; then
+        printf '  Plymouth already uses the script theme.\n'
+    else
+        run plymouth-set-default-theme script
+    fi
+
+    if [[ -d "$SYSTEMD_BOOT_ENTRIES_DIR" ]]; then
+        mapfile -t boot_entries < <(
+            find "$SYSTEMD_BOOT_ENTRIES_DIR" \
+                -maxdepth 1 \
+                -type f \
+                -name '*.conf' \
+                -print \
+                | sort
+        )
+    fi
+
+    for boot_entry in "${boot_entries[@]}"; do
+        grep -Eq '^[[:space:]]*linux[[:space:]]+' "$boot_entry" || continue
+        systemd_boot_entry_found=true
+
+        options_line="$(
+            grep -Em1 '^[[:space:]]*options([[:space:]]|$)' "$boot_entry" \
+                || true
+        )"
+        [[ -n "$options_line" ]] \
+            || die "Linux boot entry has no options line: $boot_entry"
+
+        normalized_options=" ${options_line//$'\t'/ } "
+        missing_parameters=()
+        for parameter in "${QUIET_BOOT_PARAMETERS[@]}"; do
+            if [[ "$normalized_options" != *" $parameter "* ]]; then
+                missing_parameters+=("$parameter")
+            fi
+        done
+
+        if ((${#missing_parameters[@]} == 0)); then
+            printf '  Quiet boot parameters are already present in %s.\n' "$boot_entry"
+            continue
+        fi
+
+        run sed -i -E \
+            "/^[[:space:]]*options([[:space:]]|$)/ s|[[:space:]]*$| ${missing_parameters[*]}|" \
+            "$boot_entry"
+    done
+
+    [[ "$systemd_boot_entry_found" == true ]] \
+        || die "No systemd-boot Linux entry found in $SYSTEMD_BOOT_ENTRIES_DIR"
+
+    # Rebuilding on every bootstrap run also repairs an interrupted earlier
+    # run where the text configuration changed before initramfs generation.
+    run mkinitcpio -P
 }
 
 configure_system() {
@@ -514,6 +630,7 @@ main() {
     configure_sudo
     install_paru
     install_workstation_packages
+    configure_boot_splash
     configure_system
     deploy_user_configuration
 
