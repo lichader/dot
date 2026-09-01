@@ -111,15 +111,13 @@ GUI_APPLICATION_PACKAGES=(
     distroshelf
     filezilla
     gnome-calculator
-    gvfs
     gvfs-gphoto2
     gvfs-smb
     mtpfs
+    nautilus
     openrgb
     ristretto
     steam
-    thunar
-    thunar-volman
     virt-manager
     virt-viewer
     zathura

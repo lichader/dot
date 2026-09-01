@@ -13,6 +13,7 @@ local noctaliaIpc = "noctalia msg "
 ----------------------------------------------------------------------
 hl.bind(mod .. " + T", hl.dsp.exec_cmd(progs.terminal))
 hl.bind(mod .. " + E", hl.dsp.exec_cmd(progs.file_manager))
+hl.bind(modShift .. " + E", hl.dsp.exec_cmd(progs.gui_file_manager))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd(progs.browser))
 hl.bind(mod .. " + Y", hl.dsp.exec_cmd(progs.task_manager))
 hl.bind(mod .. " + V", hl.dsp.exec_cmd(noctaliaIpc .. "panel-toggle clipboard"))
@@ -36,7 +37,6 @@ hl.bind(modShift .. " + D", hl.dsp.exec_cmd("pkill -SIGUSR1 wayscriber"))
 -- Quick web apps (Chrome PWA mode)
 ----------------------------------------------------------------------
 hl.bind(modShift .. " + Q", hl.dsp.exec_cmd("google-chrome-stable --app=https://chatgpt.com/"))
-hl.bind(modShift .. " + E", hl.dsp.exec_cmd("google-chrome-stable --app=https://www.reddit.com"))
 hl.bind(modShift .. " + X", hl.dsp.exec_cmd("google-chrome-stable --app=https://x.com/home"))
 hl.bind(modShift .. " + W", hl.dsp.exec_cmd("google-chrome-stable --app=https://excalidraw.com/"))
 hl.bind(modShift .. " + O", hl.dsp.exec_cmd("google-chrome-stable --app=http://mynas.local:9070/unread"))

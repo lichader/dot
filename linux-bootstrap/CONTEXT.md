@@ -133,6 +133,9 @@ include:
 
 - AMD microcode, Mesa, Radeon Vulkan/VA-API support, and monitoring tools
 - Hyprland, Noctalia, portals, UWSM, screenshot tools, and input methods
+- Nautilus as the graphical file manager and default directory handler on
+  `Super+Shift+E`, terminal Yazi on `Super+E`, and the required GVfs filesystem
+  integrations
 - PipeWire/WirePlumber, NetworkManager with iwd, Bluetooth, printing, Docker,
   libvirt, Tailscale, gaming packages, and workstation applications
 - Zsh, Paru, Neovim, Herdr, development tools, fonts, and user-scoped language

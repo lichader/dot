@@ -135,6 +135,22 @@ forbidden="$(
 )"
 [[ -z "$forbidden" ]] || fail "Sway/KDE packages are intentionally excluded: $forbidden"
 
+printf '%s\n' "${GUI_APPLICATION_PACKAGES[@]}" | grep -Fxq nautilus \
+    || fail "Nautilus is missing from the GUI application packages"
+if printf '%s\n' "${GUI_APPLICATION_PACKAGES[@]}" \
+    | grep -Eq '^(thunar|thunar-volman)$'; then
+    fail "Thunar packages remain after the Nautilus migration"
+fi
+grep -Fq 'file_manager     = "ghostty -e yazi"' \
+    "$SCRIPT_DIR/../config/.config/hypr/lua/programs.lua" \
+    || fail "Hyprland does not retain Yazi as its terminal file manager"
+grep -Fq 'gui_file_manager = "nautilus --new-window"' \
+    "$SCRIPT_DIR/../config/.config/hypr/lua/programs.lua" \
+    || fail "Hyprland does not configure Nautilus as its graphical file manager"
+grep -Fq 'hl.bind(modShift .. " + E", hl.dsp.exec_cmd(progs.gui_file_manager))' \
+    "$SCRIPT_DIR/../config/.config/hypr/lua/keybindings.lua" \
+    || fail "Hyprland does not bind Super+Shift+E to Nautilus"
+
 printf 'Checking official package availability...\n'
 if ! pacman -Si \
     "${BOOTSTRAP_PACKAGES[@]}" \
@@ -177,8 +193,11 @@ for expected_path in \
     /.cache/zsh \
     /.local/state/zsh; do
     grep -Fq "$expected_path" <<<"$DRY_RUN_OUTPUT" \
-        || fail "bootstrap omits essential Zsh setup path: $expected_path"
+        || fail "bootstrap omits required setup path: $expected_path"
 done
+
+grep -Fq 'org.gnome.Nautilus.desktop' <<<"$DRY_RUN_OUTPUT" \
+    || fail "bootstrap does not register Nautilus as the directory handler"
 
 for tool_installer in \
     https://chatgpt.com/codex/install.sh \

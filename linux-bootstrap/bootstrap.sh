@@ -362,6 +362,11 @@ deploy_user_configuration() {
             "$desktop_file" \
             "$TARGET_HOME/.local/share/applications/$(basename "$desktop_file")"
     done
+
+    as_target_user xdg-mime default \
+        org.gnome.Nautilus.desktop \
+        inode/directory \
+        application/x-gnome-saved-search
 }
 
 install_user_tools() {

@@ -158,6 +158,9 @@ zramctl
 - Zstd-compressed Zram swap sized to half of system memory with a 16 GiB cap,
   plus virtual-memory tuning for in-memory swap
 - GUI, terminal, development, virtualization, gaming, and AUR applications
+- Nautilus as the graphical file manager and default directory handler, opened
+  with `Super+Shift+E`, while `Super+E` retains terminal Yazi; GVfs integrations
+  support remote shares and cameras
 - Public application, desktop, and portable Git configuration via GNU Stow
 - Optional private Git identity and repository routing via a separate overlay
 - Herdr with the pinned Vim/Neovim pane-navigation plugin
