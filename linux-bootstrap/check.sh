@@ -109,6 +109,13 @@ grep -Fqx 'theme=KvGnomeDark' \
 grep -Fqx 'gtk-theme-name=adw-gtk3-dark' \
     "$SCRIPT_DIR/../config/.config/gtk-3.0/settings.ini" \
     || fail "GTK 3 does not default to its packaged dark theme"
+for gtk_version in 3.0 4.0; do
+    grep -Fqx 'gtk-icon-theme-name=Adwaita' \
+        "$SCRIPT_DIR/../config/.config/gtk-$gtk_version/settings.ini" \
+        || fail "GTK $gtk_version does not default to high-contrast Adwaita icons"
+done
+grep -Fq "icon-theme='Adwaita'" "$SCRIPT_DIR/bootstrap.sh" \
+    || fail "Dconf does not default desktop applications to Adwaita icons"
 grep -Fqx 'mode = "dark"' "$SCRIPT_DIR/../config/.config/noctalia/config.toml" \
     || fail "Noctalia does not default to dark mode"
 

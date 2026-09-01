@@ -256,7 +256,8 @@ system-db:local'
 
     dconf_dark_theme="[org/gnome/desktop/interface]
 color-scheme='prefer-dark'
-gtk-theme='adw-gtk3-dark'"
+gtk-theme='adw-gtk3-dark'
+icon-theme='Adwaita'"
     install_text_file /etc/dconf/db/local.d/00-dark-theme 0644 "$dconf_dark_theme"
     run dconf update
 

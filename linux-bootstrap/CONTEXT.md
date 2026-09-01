@@ -192,8 +192,9 @@ excluded from the package manifest and public configuration.
 The workstation defaults to dark appearance without locking that preference:
 Noctalia starts in dark mode, Dconf provides `prefer-dark` and the packaged
 `adw-gtk3-dark` theme as user-overridable system defaults, static GTK settings
-cover applications that do not consult Dconf, and Kvantum supplies the packaged
-`KvGnomeDark` style to Qt 5 and Qt 6 applications.
+cover applications that do not consult Dconf, Adwaita supplies visible native
+GNOME icons on dark surfaces, and Kvantum supplies the packaged `KvGnomeDark`
+style to Qt 5 and Qt 6 applications.
 
 Noctalia's session lock and application secret storage are separate:
 

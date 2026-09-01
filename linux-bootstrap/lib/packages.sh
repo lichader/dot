@@ -77,6 +77,7 @@ DESKTOP_FOUNDATION_PACKAGES=(
 )
 
 HYPRLAND_PACKAGES=(
+    adwaita-icon-theme
     adw-gtk-theme
     dconf
     fcitx5
