@@ -161,6 +161,7 @@ zramctl
 - Nautilus as the graphical file manager and default directory handler, opened
   with `Super+Shift+E`, while `Super+E` retains terminal Yazi; GVfs integrations
   support remote shares and cameras
+- GNOME Image Viewer as the default application for common image formats
 - Public application, desktop, and portable Git configuration via GNU Stow
 - Optional private Git identity and repository routing via a separate overlay
 - Herdr with the pinned Vim/Neovim pane-navigation plugin

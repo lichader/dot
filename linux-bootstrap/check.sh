@@ -137,9 +137,11 @@ forbidden="$(
 
 printf '%s\n' "${GUI_APPLICATION_PACKAGES[@]}" | grep -Fxq nautilus \
     || fail "Nautilus is missing from the GUI application packages"
+printf '%s\n' "${GUI_APPLICATION_PACKAGES[@]}" | grep -Fxq loupe \
+    || fail "GNOME Image Viewer is missing from the GUI application packages"
 if printf '%s\n' "${GUI_APPLICATION_PACKAGES[@]}" \
-    | grep -Eq '^(thunar|thunar-volman)$'; then
-    fail "Thunar packages remain after the Nautilus migration"
+    | grep -Eq '^(ristretto|thunar|thunar-volman)$'; then
+    fail "Replaced Xfce desktop applications remain in the package manifest"
 fi
 grep -Fq 'file_manager     = "ghostty -e yazi"' \
     "$SCRIPT_DIR/../config/.config/hypr/lua/programs.lua" \
@@ -198,6 +200,8 @@ done
 
 grep -Fq 'org.gnome.Nautilus.desktop' <<<"$DRY_RUN_OUTPUT" \
     || fail "bootstrap does not register Nautilus as the directory handler"
+grep -Fq 'org.gnome.Loupe.desktop' <<<"$DRY_RUN_OUTPUT" \
+    || fail "bootstrap does not register GNOME Image Viewer for images"
 
 for tool_installer in \
     https://chatgpt.com/codex/install.sh \

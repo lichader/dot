@@ -113,10 +113,10 @@ GUI_APPLICATION_PACKAGES=(
     gnome-calculator
     gvfs-gphoto2
     gvfs-smb
+    loupe
     mtpfs
     nautilus
     openrgb
-    ristretto
     steam
     virt-manager
     virt-viewer

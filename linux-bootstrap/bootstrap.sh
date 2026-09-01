@@ -367,6 +367,20 @@ deploy_user_configuration() {
         org.gnome.Nautilus.desktop \
         inode/directory \
         application/x-gnome-saved-search
+
+    as_target_user xdg-mime default \
+        org.gnome.Loupe.desktop \
+        image/apng \
+        image/avif \
+        image/bmp \
+        image/gif \
+        image/heic \
+        image/jpeg \
+        image/jxl \
+        image/png \
+        image/svg+xml \
+        image/tiff \
+        image/webp
 }
 
 install_user_tools() {
