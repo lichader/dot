@@ -162,6 +162,8 @@ zramctl
   with `Super+Shift+E`, while `Super+E` retains terminal Yazi; GVfs integrations
   support remote shares and cameras
 - GNOME Image Viewer as the default application for common image formats
+- GNOME Disk Usage Analyzer and Disks for graphical storage inspection and
+  maintenance
 - Public application, desktop, and portable Git configuration via GNU Stow
 - Optional private Git identity and repository routing via a separate overlay
 - Herdr with the pinned Vim/Neovim pane-navigation plugin

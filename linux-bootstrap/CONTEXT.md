@@ -137,6 +137,8 @@ include:
   `Super+Shift+E`, terminal Yazi on `Super+E`, and the required GVfs filesystem
   integrations
 - GNOME Image Viewer as the default application for common image formats
+- GNOME Disk Usage Analyzer and Disks for graphical storage inspection and
+  maintenance
 - PipeWire/WirePlumber, NetworkManager with iwd, Bluetooth, printing, Docker,
   libvirt, Tailscale, gaming packages, and workstation applications
 - Zsh, Paru, Neovim, Herdr, development tools, fonts, and user-scoped language

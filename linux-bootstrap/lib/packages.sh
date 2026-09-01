@@ -108,9 +108,11 @@ HYPRLAND_PACKAGES=(
 
 GUI_APPLICATION_PACKAGES=(
     android-file-transfer
+    baobab
     distroshelf
     filezilla
     gnome-calculator
+    gnome-disk-utility
     gvfs-gphoto2
     gvfs-smb
     loupe
