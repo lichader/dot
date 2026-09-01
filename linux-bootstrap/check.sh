@@ -98,6 +98,19 @@ stow \
     || fail "public Git Stow package does not deploy both global files"
 [[ -L "$STOW_FIXTURE/.config/hypr" && -L "$STOW_FIXTURE/.config/noctalia" ]] \
     || fail "public config Stow package does not fold application directories"
+[[ -L "$STOW_FIXTURE/.config/Kvantum" \
+    && -L "$STOW_FIXTURE/.config/gtk-3.0" \
+    && -L "$STOW_FIXTURE/.config/gtk-4.0" ]] \
+    || fail "public config Stow package does not deploy dark toolkit configuration"
+
+grep -Fqx 'theme=KvGnomeDark' \
+    "$SCRIPT_DIR/../config/.config/Kvantum/kvantum.kvconfig" \
+    || fail "Kvantum does not default to its packaged dark theme"
+grep -Fqx 'gtk-theme-name=adw-gtk3-dark' \
+    "$SCRIPT_DIR/../config/.config/gtk-3.0/settings.ini" \
+    || fail "GTK 3 does not default to its packaged dark theme"
+grep -Fqx 'mode = "dark"' "$SCRIPT_DIR/../config/.config/noctalia/config.toml" \
+    || fail "Noctalia does not default to dark mode"
 
 duplicates="$(
     printf '%s\n' \
@@ -155,6 +168,8 @@ DRY_RUN_OUTPUT="$(
 )"
 
 for expected_path in \
+    /etc/dconf/profile/user \
+    /etc/dconf/db/local.d/00-dark-theme \
     /etc/zsh/zshenv \
     /.cache \
     /.local/share \

@@ -146,6 +146,8 @@ zramctl
 - Hyprland and Noctalia, with Noctalia providing the bar, launcher,
   notifications, wallpaper, clipboard history, idle handling, session lock,
   media controls, network and Bluetooth interfaces, and a polkit agent
+- A dark desktop preference by default across Noctalia, GTK 3/4, applications
+  using the desktop color-scheme portal, and Qt 5/6 through Kvantum
 - Portals, PipeWire, WirePlumber, screenshots, input methods, and brightness
   controls, including DDC support for external monitors
 - Greetd/Tuigreet as the login manager

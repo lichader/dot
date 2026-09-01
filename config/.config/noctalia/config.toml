@@ -168,6 +168,7 @@ grid_columns = 5
 [theme]
 builtin = "Gruvbox"
 community_palette = "Gruvbox Material Hard"
+mode = "dark"
 pure_black_dark = true
 source = "wallpaper"
 wallpaper_scheme = "m3-monochrome"

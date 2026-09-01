@@ -77,6 +77,8 @@ DESKTOP_FOUNDATION_PACKAGES=(
 )
 
 HYPRLAND_PACKAGES=(
+    adw-gtk-theme
+    dconf
     fcitx5
     fcitx5-chinese-addons
     fcitx5-configtool
@@ -89,6 +91,7 @@ HYPRLAND_PACKAGES=(
     grim
     hyprland
     kvantum
+    kvantum-qt5
     noctalia
     nwg-look
     qt5-wayland

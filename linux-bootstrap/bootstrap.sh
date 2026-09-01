@@ -230,6 +230,8 @@ install_workstation_packages() {
 
 configure_system() {
     local service
+    local dconf_dark_theme
+    local dconf_profile
     local zshenv
     local networkmanager_iwd
     local greetd_config
@@ -247,6 +249,16 @@ if [[ -d "$XDG_CONFIG_HOME/zsh" ]]; then
     export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 fi'
     install_text_file /etc/zsh/zshenv 0644 "$zshenv"
+
+    dconf_profile='user-db:user
+system-db:local'
+    install_text_file /etc/dconf/profile/user 0644 "$dconf_profile"
+
+    dconf_dark_theme="[org/gnome/desktop/interface]
+color-scheme='prefer-dark'
+gtk-theme='adw-gtk3-dark'"
+    install_text_file /etc/dconf/db/local.d/00-dark-theme 0644 "$dconf_dark_theme"
+    run dconf update
 
     networkmanager_iwd='[device]
 wifi.backend=iwd'
