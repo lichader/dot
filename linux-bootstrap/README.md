@@ -159,8 +159,8 @@ zramctl
   user's login password
 - NetworkManager with the iwd backend, Bluetooth, printing, Docker, libvirt,
   LACT, Tailscale, package-cache cleanup, and scheduled services
-- Zstd-compressed Zram swap sized to half of system memory with a 16 GiB cap,
-  plus virtual-memory tuning for in-memory swap
+- Zstd-compressed Zram swap sized to half of system memory at priority 100,
+  swappiness 100, and priority 10 for any existing disk swap in `/etc/fstab`
 - GUI, terminal, development, virtualization, gaming, and AUR applications
 - Nautilus as the graphical file manager and default directory handler, opened
   with `Super+Shift+E`, while `Super+E` retains terminal Yazi; GVfs integrations

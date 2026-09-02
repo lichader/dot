@@ -152,14 +152,15 @@ profile.
 
 `zram-generator` creates `/dev/zram0` as swap during the first normal boot; the
 bootstrap does not add it to `fstab` or enable a persistent service. The logical
-device uses Zstd, is sized to half of physical memory with a 16 GiB cap, and has
-swap priority 100. The allocation grows only as compressed pages are stored.
+device uses Zstd, is sized to half of physical memory, and has swap priority
+100. The allocation grows only as compressed pages are stored.
 
-The bootstrap also writes `/etc/sysctl.d/99-zram.conf` with swappiness 150 so
-the kernel prefers inexpensive in-memory swap over reclaiming useful file
-cache, and page-cluster 0 to disable swap readahead. Zram is volatile and does
-not provide a hibernation target; hibernation would require separate
-disk-backed swap.
+The bootstrap writes `/etc/sysctl.d/99-memory.conf` with swappiness 100 and
+applies it immediately. Existing non-Zram swap entries in `/etc/fstab` retain
+their source and other options but receive priority 10, ensuring Zram is used
+first. Disk-backed swap is never created or resized; its priority takes effect
+when that swap is next activated. Zram is volatile and does not provide a
+hibernation target.
 
 ## Tailscale
 

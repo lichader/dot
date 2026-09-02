@@ -7,6 +7,7 @@ DOTFILES_FIXTURE=""
 DRY_RUN_OUTPUT=""
 BOOT_FIXTURE=""
 BOOT_DRY_RUN_OUTPUT=""
+MEMORY_FIXTURE=""
 POST_INSTALL_FIXTURE=""
 STOW_FIXTURE=""
 SHARED_ARCH_AUR_PACKAGES=()
@@ -24,6 +25,9 @@ cleanup() {
     fi
     if [[ -n "$BOOT_FIXTURE" && -d "$BOOT_FIXTURE" ]]; then
         rm -rf -- "$BOOT_FIXTURE"
+    fi
+    if [[ -n "$MEMORY_FIXTURE" && -d "$MEMORY_FIXTURE" ]]; then
+        rm -rf -- "$MEMORY_FIXTURE"
     fi
 }
 
@@ -214,6 +218,126 @@ grep -Fq 'org.gnome.Nautilus.desktop' <<<"$DRY_RUN_OUTPUT" \
     || fail "bootstrap does not register Nautilus as the directory handler"
 grep -Fq 'org.gnome.Loupe.desktop' <<<"$DRY_RUN_OUTPUT" \
     || fail "bootstrap does not register GNOME Image Viewer for images"
+for memory_setting in \
+    'zram-size = ram / 2' \
+    'compression-algorithm = zstd' \
+    'swap-priority = 100' \
+    'vm.swappiness=100' \
+    "option='pri=10'"; do
+    grep -Fq "$memory_setting" "$SCRIPT_DIR/lib/memory.sh" \
+        || fail "bootstrap omits memory setting: $memory_setting"
+done
+grep -Fq 'sysctl vm.swappiness' "$SCRIPT_DIR/lib/memory.sh" \
+    || fail "bootstrap does not verify swappiness"
+grep -Fq 'run zramctl' "$SCRIPT_DIR/lib/memory.sh" \
+    || fail "bootstrap does not verify Zram"
+grep -Fq 'run swapon --show' "$SCRIPT_DIR/lib/memory.sh" \
+    || fail "bootstrap does not verify active swap"
+if grep -Eq 'zram-size = min\(ram / 2, 16 \* 1024\)|vm\.swappiness[[:space:]]*=[[:space:]]*150' \
+    "$SCRIPT_DIR/lib/memory.sh"; then
+    fail "bootstrap retains superseded memory settings"
+fi
+
+MEMORY_FIXTURE="$(mktemp -d)"
+printf '%s\n' \
+    '# preserve zram comment' \
+    '[zram0]' \
+    'host-memory-limit = none' \
+    'zram-size = 4096' \
+    'zram-fraction = 0.25' \
+    'max-zram-size = 8192' \
+    'compression-algorithm = lzo' \
+    'swap-priority = 50' \
+    'options = discard' \
+    '' \
+    '[zram1]' \
+    'zram-size = ram / 8' \
+    >"$MEMORY_FIXTURE/zram-generator.conf"
+printf '%s\n' \
+    '# preserve sysctl comment' \
+    'vm.dirty_ratio=15' \
+    'vm.swappiness=60' \
+    'vm.swappiness = 80' \
+    >"$MEMORY_FIXTURE/99-memory.conf"
+printf '%s\n' \
+    'vm.swappiness = 150' \
+    'vm.page-cluster = 0' \
+    >"$MEMORY_FIXTURE/99-zram.conf"
+printf '%s\n' \
+    '# preserve fstab comment' \
+    'UUID=root / btrfs rw 0 0' \
+    'UUID=swap none swap defaults,discard,pri=5,nofail 0 0' \
+    '/swapfile none swap pri=20 0 0 # preserve inline comment' \
+    >"$MEMORY_FIXTURE/fstab"
+
+(
+    DRY_RUN=false
+    FSTAB_PATH="$MEMORY_FIXTURE/fstab"
+    LEGACY_ZRAM_SYSCTL_PATH="$MEMORY_FIXTURE/99-zram.conf"
+    MEMORY_SYSCTL_PATH="$MEMORY_FIXTURE/99-memory.conf"
+    ZRAM_GENERATOR_CONFIG_PATH="$MEMORY_FIXTURE/zram-generator.conf"
+    source "$SCRIPT_DIR/lib/common.sh"
+    source "$SCRIPT_DIR/lib/memory.sh"
+
+    configure_zram_generator
+    configure_swappiness_file
+    remove_legacy_swappiness_setting
+    configure_disk_swap_priority
+)
+
+for zram_setting in \
+    'zram-size = ram / 2' \
+    'compression-algorithm = zstd' \
+    'swap-priority = 100'; do
+    [[ "$(grep -Fxc "$zram_setting" "$MEMORY_FIXTURE/zram-generator.conf")" == 1 ]] \
+        || fail "Zram fixture does not contain exactly one setting: $zram_setting"
+done
+grep -Fqx 'host-memory-limit = none' "$MEMORY_FIXTURE/zram-generator.conf" \
+    || fail "Zram rewrite discarded an unrelated zram0 setting"
+grep -Fqx 'zram-size = ram / 8' "$MEMORY_FIXTURE/zram-generator.conf" \
+    || fail "Zram rewrite modified an unrelated device section"
+if grep -Eq '^[[:space:]]*(zram-fraction|max-zram-size)[[:space:]]*=' \
+    "$MEMORY_FIXTURE/zram-generator.conf"; then
+    fail "Zram rewrite retains a legacy setting that overrides zram-size"
+fi
+[[ "$(grep -Ec '^[[:space:]]*vm\.swappiness[[:space:]]*=' \
+    "$MEMORY_FIXTURE/99-memory.conf")" == 1 ]] \
+    || fail "memory sysctl fixture does not contain exactly one swappiness setting"
+grep -Fqx 'vm.swappiness=100' "$MEMORY_FIXTURE/99-memory.conf" \
+    || fail "memory sysctl fixture does not set swappiness 100"
+grep -Fqx 'vm.dirty_ratio=15' "$MEMORY_FIXTURE/99-memory.conf" \
+    || fail "memory sysctl rewrite discarded an unrelated setting"
+if grep -Eq '^[[:space:]]*vm\.swappiness[[:space:]]*=' \
+    "$MEMORY_FIXTURE/99-zram.conf"; then
+    fail "legacy Zram sysctl file retains a conflicting swappiness setting"
+fi
+grep -Fqx 'vm.page-cluster = 0' "$MEMORY_FIXTURE/99-zram.conf" \
+    || fail "legacy sysctl cleanup discarded an unrelated setting"
+grep -Fqx 'UUID=swap none swap defaults,discard,pri=10,nofail 0 0' \
+    "$MEMORY_FIXTURE/fstab" \
+    || fail "fstab swap partition did not receive priority 10"
+grep -Fqx '/swapfile none swap pri=10 0 0 # preserve inline comment' \
+    "$MEMORY_FIXTURE/fstab" \
+    || fail "fstab swapfile did not preserve its source and inline comment"
+
+memory_checksum_before="$(sha256sum "$MEMORY_FIXTURE"/*)"
+(
+    DRY_RUN=false
+    FSTAB_PATH="$MEMORY_FIXTURE/fstab"
+    LEGACY_ZRAM_SYSCTL_PATH="$MEMORY_FIXTURE/99-zram.conf"
+    MEMORY_SYSCTL_PATH="$MEMORY_FIXTURE/99-memory.conf"
+    ZRAM_GENERATOR_CONFIG_PATH="$MEMORY_FIXTURE/zram-generator.conf"
+    source "$SCRIPT_DIR/lib/common.sh"
+    source "$SCRIPT_DIR/lib/memory.sh"
+
+    configure_zram_generator
+    configure_swappiness_file
+    remove_legacy_swappiness_setting
+    configure_disk_swap_priority
+) >/dev/null
+memory_checksum_after="$(sha256sum "$MEMORY_FIXTURE"/*)"
+[[ "$memory_checksum_before" == "$memory_checksum_after" ]] \
+    || fail "memory configuration is not idempotent"
 
 BOOT_FIXTURE="$(mktemp -d)"
 mkdir -p \
