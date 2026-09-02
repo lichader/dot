@@ -7,7 +7,7 @@ source "$CONFIG_DIR/colors.sh"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 ITEM_DIR="$CONFIG_DIR/items"
 
-sketchybar --bar position=top height=30 blur_radius=30 color=$BAR_COLOR
+sketchybar --bar position=top height=30 margin=50 corner_radius=8 blur_radius=30 color=$BAR_COLOR
 
 default=(
   padding_left=5
@@ -35,6 +35,7 @@ source $ITEM_DIR/front_app.sh
 source $ITEM_DIR/calendar.sh
 source $ITEM_DIR/volume.sh
 source $ITEM_DIR/battery.sh
+source $ITEM_DIR/memory.sh
 source $ITEM_DIR/cpu.sh
 
 ##### Force all scripts to run the first time (never do this in a script) #####

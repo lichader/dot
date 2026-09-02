@@ -5,7 +5,7 @@ export BLACK=0xff000000
 
 
 # -- Teal Scheme --
-export BAR_COLOR=0xff001f30
+export BAR_COLOR=$BLACK
 export ITEM_BG_COLOR=0xff003547
 export ACCENT_COLOR=0xff2cf9ed
 
