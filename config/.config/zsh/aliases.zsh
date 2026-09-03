@@ -13,16 +13,16 @@ compdef nvim=vim
 
 # =========== eza ==================
 # default ls with icons
-alias ls='eza --icons'
+alias ls='eza --icons=auto'
 
 # detailed listing without hidden files
-alias ll='eza -lh --icons --git'
+alias ll='eza -lh --icons=auto --git'
 
 # detailed listing with hidden files
-alias la='eza -lha --icons --git'
+alias la='eza -lha --icons=auto --git'
 
 # Tree view
-alias tree='eza --tree --icons'
+alias tree='eza --tree --icons=auto'
 
 # make zsh completion to use eza instead of ls
 compdef eza=ls
