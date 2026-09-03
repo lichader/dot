@@ -54,7 +54,7 @@ arch-chroot /mnt
 ```
 
 Archinstall should already have configured the locale, timezone, hostname,
-user, and systemd-boot. Inside the chroot, remain logged in as root, fetch the
+user, and bootloader. Inside the chroot, remain logged in as root, fetch the
 public setup repository over HTTPS, and run the bootstrap:
 
 ```bash
@@ -151,9 +151,6 @@ zramctl
   high-contrast Adwaita icons across GTK applications
 - Portals, PipeWire, WirePlumber, screenshots, input methods, and brightness
   controls, including DDC support for external monitors
-- Plymouth's `script` theme from the early initramfs through a quiet
-  systemd-boot, followed by Greetd/Tuigreet on the first virtual terminal;
-  normal boot logs remain available through the system journal
 - Greetd/Tuigreet as the login manager
 - GNOME Keyring secret storage, unlocked through the Greetd PAM login using the
   user's login password

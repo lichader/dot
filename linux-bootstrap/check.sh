@@ -5,8 +5,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_FIXTURE=""
 DRY_RUN_OUTPUT=""
-BOOT_FIXTURE=""
-BOOT_DRY_RUN_OUTPUT=""
 MEMORY_FIXTURE=""
 POST_INSTALL_FIXTURE=""
 STOW_FIXTURE=""
@@ -22,9 +20,6 @@ cleanup() {
     fi
     if [[ -n "$POST_INSTALL_FIXTURE" && -d "$POST_INSTALL_FIXTURE" ]]; then
         rm -rf -- "$POST_INSTALL_FIXTURE"
-    fi
-    if [[ -n "$BOOT_FIXTURE" && -d "$BOOT_FIXTURE" ]]; then
-        rm -rf -- "$BOOT_FIXTURE"
     fi
     if [[ -n "$MEMORY_FIXTURE" && -d "$MEMORY_FIXTURE" ]]; then
         rm -rf -- "$MEMORY_FIXTURE"
@@ -338,55 +333,6 @@ memory_checksum_before="$(sha256sum "$MEMORY_FIXTURE"/*)"
 memory_checksum_after="$(sha256sum "$MEMORY_FIXTURE"/*)"
 [[ "$memory_checksum_before" == "$memory_checksum_after" ]] \
     || fail "memory configuration is not idempotent"
-
-BOOT_FIXTURE="$(mktemp -d)"
-mkdir -p \
-    "$BOOT_FIXTURE/etc/plymouth" \
-    "$BOOT_FIXTURE/boot/loader/entries"
-printf '%s\n' \
-    'HOOKS=(base udev autodetect microcode modconf kms keyboard block filesystems fsck)' \
-    >"$BOOT_FIXTURE/etc/mkinitcpio.conf"
-printf '%s\n' \
-    '[Daemon]' \
-    'Theme=bgrt' \
-    >"$BOOT_FIXTURE/etc/plymouth/plymouthd.conf"
-printf '%s\n' \
-    'title Arch Linux' \
-    'linux /vmlinuz-linux' \
-    'initrd /initramfs-linux.img' \
-    'options root=PARTUUID=test rw rootfstype=btrfs' \
-    >"$BOOT_FIXTURE/boot/loader/entries/arch.conf"
-
-BOOT_DRY_RUN_OUTPUT="$(
-    MKINITCPIO_CONFIG_PATH="$BOOT_FIXTURE/etc/mkinitcpio.conf" \
-    PLYMOUTH_CONFIG_PATH="$BOOT_FIXTURE/etc/plymouth/plymouthd.conf" \
-    SYSTEMD_BOOT_ENTRIES_DIR="$BOOT_FIXTURE/boot/loader/entries" \
-        "$SCRIPT_DIR/bootstrap.sh" --user dot_bootstrap_check --dry-run
-)"
-
-grep -Fq 'plymouth-set-default-theme script' <<<"$BOOT_DRY_RUN_OUTPUT" \
-    || fail "bootstrap does not select the Plymouth script theme"
-grep -Fq 'mkinitcpio -P' <<<"$BOOT_DRY_RUN_OUTPUT" \
-    || fail "bootstrap does not rebuild the initramfs after configuring Plymouth"
-for parameter in \
-    quiet \
-    splash \
-    loglevel=3 \
-    systemd.show_status=auto \
-    udev.log_level=3 \
-    rd.udev.log_level=3 \
-    vt.global_cursor_default=0; do
-    grep -Fq "$parameter" <<<"$BOOT_DRY_RUN_OUTPUT" \
-        || fail "bootstrap omits quiet boot parameter: $parameter"
-done
-
-grep -Fqx \
-    'HOOKS=(base udev autodetect microcode modconf kms keyboard block filesystems fsck)' \
-    "$BOOT_FIXTURE/etc/mkinitcpio.conf" \
-    || fail "bootstrap dry run mutated the mkinitcpio fixture"
-grep -Fqx 'options root=PARTUUID=test rw rootfstype=btrfs' \
-    "$BOOT_FIXTURE/boot/loader/entries/arch.conf" \
-    || fail "bootstrap dry run mutated the systemd-boot fixture"
 
 for tool_installer in \
     https://chatgpt.com/codex/install.sh \

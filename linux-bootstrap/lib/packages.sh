@@ -72,7 +72,6 @@ DESKTOP_FOUNDATION_PACKAGES=(
     pipewire-alsa
     pipewire-jack
     pipewire-pulse
-    plymouth
     system-config-printer
     wireplumber
 )

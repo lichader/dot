@@ -47,7 +47,7 @@ no authenticated clone.
 
 Complete the normal base installation from the Arch ISO first: mount the target
 filesystems, install the base system, generate `fstab`, and configure the
-timezone, locale, hostname, credentials, kernel, firmware, and systemd-boot. Then
+timezone, locale, hostname, credentials, kernel, firmware, and bootloader. Then
 enter the installed system as root:
 
 ```bash
@@ -176,14 +176,6 @@ Greetd with [tuigreet](https://github.com/apognu/tuigreet) is used instead of
 SDDM. The bootstrap installs the official `greetd` and `greetd-tuigreet` Arch
 packages, enables `greetd.service`, creates `/var/cache/tuigreet` with the
 correct ownership, and generates `/etc/greetd/config.toml`.
-
-The bootstrap also installs Plymouth, inserts its hook immediately after the
-active `udev` or `systemd` mkinitcpio hook, selects the packaged `script` theme,
-and rebuilds every configured initramfs. It appends quiet boot parameters to
-each Linux Type #1 systemd-boot entry without replacing Archinstall's root or
-filesystem parameters. Routine kernel, udev, and systemd status output is
-suppressed during startup, while errors and the complete journal remain
-available for troubleshooting.
 
 Tuigreet lists sessions from `/usr/share/wayland-sessions`, remembers the last
 username, and remembers the selected session per user. On the first login,
