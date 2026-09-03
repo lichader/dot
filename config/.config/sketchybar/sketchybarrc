@@ -28,7 +28,7 @@ sketchybar --default "${default[@]}"
 
 
 # # -- Left Side Items --
-source $ITEM_DIR/aerospace_space.sh
+"$ITEM_DIR/aerospace_space.sh"
 source $ITEM_DIR/front_app.sh
 
 # --- Right Side Items ---
