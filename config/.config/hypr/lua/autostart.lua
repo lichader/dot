@@ -34,6 +34,7 @@ hl.on("hyprland.start", function()
 	-- Desktop shell / applets / daemons
 	hl.exec_cmd("noctalia")
 	hl.exec_cmd("dropbox")
+	hl.exec_cmd("tailscale systray")
 	hl.exec_cmd("dbus-update-activation-environment --systemd --all")
 	-- wayscriber runs under systemd so `systemctl --user restart wayscriber` cleanly reloads it.
 	-- Started explicitly here since this session doesn't reach graphical-session.target.
