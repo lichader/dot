@@ -178,6 +178,37 @@ a tailnet remains an interactive step performed by the post-install helper:
 ./linux-bootstrap/post-install.sh
 ```
 
+The helper configures NetworkManager to use systemd-resolved, links
+`/etc/resolv.conf` to its stub resolver, enables mDNS lookup, and accepts
+Tailscale DNS even when already connected. It restarts NetworkManager and
+Tailscale, briefly interrupting connectivity; run it from a local terminal.
+Preview with `--dry-run`; `--skip-tailscale` skips these DNS changes too.
+
+After connecting, the helper verifies `mynas.local` and
+`mynas.tail9ee184.ts.net` through the application resolver (`getent ahosts`).
+Each name gets up to three attempts with a ten-second timeout per attempt.
+If either fails, it reports troubleshooting hints and stops before private
+configuration setup. These checks verify address resolution, not NAS identity
+or web-service reachability. Dry runs only print the checks, and
+`--skip-tailscale` skips them.
+
+For additional diagnosis, check both resolver and application lookups:
+
+```bash
+resolvectl query mynas.tail9ee184.ts.net
+resolvectl query mynas.local
+getent hosts mynas.tail9ee184.ts.net
+getent hosts mynas.local
+```
+
+The tailnet name requires MagicDNS enabled and the NAS connected to Tailscale.
+`mynas.local` requires the NAS to advertise that mDNS name on the same local
+network, with multicast allowed; it is not provided by Tailscale. An existing
+NetworkManager profile with an explicit mDNS override takes precedence over
+the configured default; use `nmcli connection modify "PROFILE" connection.mdns 1`
+and reconnect that profile if needed. DNS resolution alone does not verify the
+NAS web service, port, or access rules.
+
 The public bootstrap does not store or consume a Tailscale authentication key.
 
 Sway and KDE/Plasma packages are intentionally excluded. Hardware-specific

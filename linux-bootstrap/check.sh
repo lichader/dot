@@ -361,6 +361,27 @@ post_install_output="$(
 )"
 grep -Fq 'sudo tailscale up' <<<"$post_install_output" \
     || fail "post-install dry run omits the Tailscale connection"
+for dns_step in \
+    'dns=systemd-resolved' \
+    'connection.mdns=1' \
+    'MulticastDNS=resolve' \
+    'sudo systemctl enable --now systemd-resolved' \
+    'sudo ln -sfn /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf' \
+    'sudo systemctl restart NetworkManager' \
+    'sudo systemctl restart tailscaled' \
+    'sudo tailscale set --accept-dns=true' \
+    'timeout 10s getent ahosts mynas.local' \
+    'timeout 10s getent ahosts mynas.tail9ee184.ts.net'; do
+    grep -Fq "$dns_step" <<<"$post_install_output" \
+        || fail "post-install dry run omits DNS setup: $dns_step"
+done
+skip_tailscale_output="$(
+    HOME="$POST_INSTALL_FIXTURE" \
+        "$SCRIPT_DIR/post-install.sh" --dry-run --skip-tailscale
+)"
+if grep -Eq 'sudo (systemctl|tailscale|ln)|/etc/(NetworkManager|systemd)|getent ahosts mynas' <<<"$skip_tailscale_output"; then
+    fail "--skip-tailscale must skip DNS and Tailscale mutations"
+fi
 grep -Fq 'gh auth login' <<<"$post_install_output" \
     || fail "post-install dry run omits GitHub authentication"
 grep -Fq 'gh repo clone' <<<"$post_install_output" \
@@ -371,6 +392,12 @@ grep -Fq 'stow --dir' <<<"$post_install_output" \
     || fail "post-install dry run omits private Git deployment"
 
 tailscale_line="$(grep -nFm1 'sudo tailscale up' <<<"$post_install_output")"
+dns_accept_line="$(grep -nFm1 'sudo tailscale set --accept-dns=true' <<<"$post_install_output")"
+for hostname in mynas.local mynas.tail9ee184.ts.net; do
+    lookup_line="$(grep -nFm1 "getent ahosts $hostname" <<<"$post_install_output")"
+    [[ "${dns_accept_line%%:*}" -lt "${lookup_line%%:*}" ]] \
+        || fail "NAS verification must follow Tailscale DNS configuration"
+done
 clone_line="$(grep -nFm1 'gh repo clone' <<<"$post_install_output")"
 [[ "${tailscale_line%%:*}" -lt "${clone_line%%:*}" ]] \
     || fail "post-install must connect Tailscale before cloning private configuration"

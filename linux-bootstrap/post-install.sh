@@ -17,7 +17,7 @@ Finish the interactive, user-scoped workstation setup after the first login.
 Options:
   --config-dir PATH   Private configuration checkout (default: ~/post-setup-config)
   --repo OWNER/REPO   Private repository (default: lichader/post-setup-config)
-  --skip-tailscale    Do not connect Tailscale
+  --skip-tailscale    Skip Tailscale and DNS configuration
   --dry-run           Print planned mutations without performing them
   -h, --help          Show this help
 
@@ -180,22 +180,99 @@ deploy_private_config() {
     done
 }
 
+configure_dns() {
+    local networkmanager_config='[main]
+dns=systemd-resolved
+
+[connection]
+connection.mdns=1'
+    local resolved_config='[Resolve]
+MulticastDNS=resolve'
+
+    printf '\nDNS (systemd-resolved and local mDNS lookup)\n'
+    run sudo install -d -m 0755 /etc/NetworkManager/conf.d /etc/systemd/resolved.conf.d
+    if [[ "$DRY_RUN" == true ]]; then
+        printf '  Write /etc/NetworkManager/conf.d/90-dotfiles-dns.conf:\n%s\n' "$networkmanager_config"
+        printf '  Write /etc/systemd/resolved.conf.d/90-dotfiles-mdns.conf:\n%s\n' "$resolved_config"
+    else
+        printf '%s\n' "$networkmanager_config" \
+            | sudo tee /etc/NetworkManager/conf.d/90-dotfiles-dns.conf >/dev/null
+        printf '%s\n' "$resolved_config" \
+            | sudo tee /etc/systemd/resolved.conf.d/90-dotfiles-mdns.conf >/dev/null
+    fi
+
+    run sudo systemctl enable --now systemd-resolved
+    # Restart to apply the drop-in even when resolved was already running.
+    run sudo systemctl restart systemd-resolved
+    run sudo ln -sfn /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+    run sudo systemctl restart NetworkManager
+    run sudo systemctl enable --now tailscaled
+    run sudo systemctl restart tailscaled
+}
+
+verify_nas_dns() {
+    local hostname attempt addresses
+    local failed=false
+
+    printf '\nVerifying NAS name resolution\n'
+    for hostname in mynas.local mynas.tail9ee184.ts.net; do
+        if [[ "$DRY_RUN" == true ]]; then
+            print_command timeout 10s getent ahosts "$hostname"
+            continue
+        fi
+
+        addresses=""
+        for attempt in 1 2 3; do
+            if addresses="$(timeout 10s getent ahosts "$hostname")" && [[ -n "$addresses" ]]; then
+                break
+            fi
+            addresses=""
+            printf '  %s: lookup attempt %s/3 failed.\n' "$hostname" "$attempt" >&2
+            if [[ "$attempt" -lt 3 ]]; then
+                sleep 2
+            fi
+        done
+
+        if [[ -n "$addresses" ]]; then
+            printf '  %s resolved:\n%s\n' "$hostname" "$addresses"
+        else
+            failed=true
+            case "$hostname" in
+                *.local)
+                    printf '  Check that the NAS advertises mynas.local on the same LAN and that mDNS multicast is allowed.\n' >&2
+                    ;;
+                *)
+                    printf '  Check MagicDNS, the NAS Tailscale connection, and its tailnet hostname.\n' >&2
+                    ;;
+            esac
+            printf '  Diagnose with: resolvectl query %s\n' "$hostname" >&2
+        fi
+    done
+
+    [[ "$failed" == false ]] || die "NAS name resolution failed; fix DNS and rerun post-install.sh."
+}
+
 connect_tailscale() {
     [[ "$SKIP_TAILSCALE" == false ]] || return 0
+
+    if [[ "$DRY_RUN" != true ]]; then
+        require_command tailscale
+        require_command getent
+        require_command timeout
+    fi
+    configure_dns
 
     printf '\nTailscale\n'
     if [[ "$DRY_RUN" == true ]]; then
         print_command sudo tailscale up
-        return 0
-    fi
-
-    command -v tailscale >/dev/null 2>&1 || return 0
-    if tailscale status >/dev/null 2>&1; then
+    elif tailscale status >/dev/null 2>&1; then
         printf '  Tailscale is already connected.\n'
-        return 0
+    else
+        sudo tailscale up
     fi
 
-    sudo tailscale up
+    run sudo tailscale set --accept-dns=true
+    verify_nas_dns
 }
 
 main() {
