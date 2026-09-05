@@ -1,0 +1,20 @@
+[display]
+show_time = true
+
+[remember]
+username = true
+user_session = true
+
+[session]
+sessions_dirs = ["/usr/share/wayland-sessions"]
+
+[background]
+kind = "none"
+
+[[outputs]]
+connector = "DP-1"
+primary = true
+
+[[outputs]]
+connector = "HDMI-A-1"
+enabled = false

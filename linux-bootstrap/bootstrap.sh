@@ -238,6 +238,7 @@ configure_system() {
     local networkmanager_iwd
     local greetd_config
     local greetd_pam
+    local vconsole_config
 
     log "Configuring system files"
 
@@ -265,11 +266,20 @@ icon-theme='Adwaita'"
 wifi.backend=iwd'
     install_text_file /etc/NetworkManager/conf.d/wifi_backend.conf 0644 "$networkmanager_iwd"
 
+    # Tuigreet inherits the console font. Preserve existing keyboard settings.
+    vconsole_config="$(if [[ -f /etc/vconsole.conf ]]; then
+        sed '/^[[:space:]]*FONT[[:space:]]*=/d' /etc/vconsole.conf
+    fi)"
+    vconsole_config+=$'\nFONT=ter-132b'
+    install_text_file /etc/vconsole.conf 0644 "$vconsole_config"
+
+    run install -Dm0644 "$SCRIPT_DIR/config/tuigreet.toml" /etc/tuigreet/config.toml
+
     greetd_config='[terminal]
 vt = 1
 
 [default_session]
-command = "tuigreet --time --remember --remember-user-session --sessions /usr/share/wayland-sessions"
+command = "tuigreet --config /etc/tuigreet/config.toml"
 user = "greeter"'
     install_text_file /etc/greetd/config.toml 0644 "$greetd_config"
     ensure_directory greeter greeter 0755 /var/cache/tuigreet

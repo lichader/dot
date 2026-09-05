@@ -172,15 +172,54 @@ repository.
 
 ## Login manager
 
-Greetd with [tuigreet](https://github.com/apognu/tuigreet) is used instead of
+Greetd with [tuigreet](https://github.com/tuigreet/tuigreet) is used instead of
 SDDM. The bootstrap installs the official `greetd` and `greetd-tuigreet` Arch
 packages, enables `greetd.service`, creates `/var/cache/tuigreet` with the
-correct ownership, and generates `/etc/greetd/config.toml`.
+correct ownership, and generates `/etc/greetd/config.toml`. The tracked
+`config/tuigreet.toml` in this bootstrap directory is installed as
+`/etc/tuigreet/config.toml`. Tuigreet runs as `greeter`, so its configuration
+is installed system-wide rather than Stowed into the desktop user's home.
+
+Tuigreet uses the Linux console font. The bootstrap installs `terminus-font`
+and sets `FONT=ter-132b` in `/etc/vconsole.conf` for larger 16×32 text on all
+virtual consoles, preserving existing keyboard settings. On an existing machine,
+apply this without rerunning the bootstrap:
+
+```bash
+sudo pacman -S --needed terminus-font
+sudo sed -i '/^[[:space:]]*FONT[[:space:]]*=/d' /etc/vconsole.conf
+printf '\nFONT=ter-132b\n' | sudo tee -a /etc/vconsole.conf
+sudo systemctl restart systemd-vconsole-setup.service
+```
+
+The setting persists across reboots. This does not change desktop terminal fonts.
 
 Tuigreet lists sessions from `/usr/share/wayland-sessions`, remembers the last
 username, and remembers the selected session per user. On the first login,
 select Hyprland from the session menu with `F3`. Keeping the selector provides a
 recovery path instead of hardcoding Hyprland. Automatic login is not enabled.
+
+The login screen disables background animations to keep the display static.
+Tuigreet uses `DP-1` as the primary output for console sizing and excludes
+`HDMI-A-1` from that calculation. These settings do not turn off the HDMI
+monitor or change the desktop's monitor configuration.
+To apply the tracked configuration on an existing machine, run from the
+repository root:
+
+```bash
+sudo install -Dm0644 linux-bootstrap/config/tuigreet.toml /etc/tuigreet/config.toml
+sudoedit /etc/greetd/config.toml
+```
+
+Set the `[default_session]` command to:
+
+```toml
+command = "tuigreet --config /etc/tuigreet/config.toml"
+```
+
+The command change takes effect when the greeter next starts. Avoid restarting
+greetd from an active desktop session. To apply subsequent TOML edits, repeat
+the install command.
 
 ## Noctalia and encrypted secrets
 

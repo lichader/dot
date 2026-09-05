@@ -73,6 +73,7 @@ DESKTOP_FOUNDATION_PACKAGES=(
     pipewire-jack
     pipewire-pulse
     system-config-printer
+    terminus-font
     wireplumber
 )
 
