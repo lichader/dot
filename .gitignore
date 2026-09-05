@@ -1,2 +1,6 @@
 config/.config/hypr/*.bak
 config/.config/zsh/.zcompdump*
+
+# Generated systemd user service enablement links
+config/.config/systemd/user/*.wants/
+config/.config/systemd/user/*.requires/
