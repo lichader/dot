@@ -31,7 +31,7 @@ hl.bind(modShift .. " + N", hl.dsp.exec_cmd(noctaliaIpc .. "panel-toggle session
 ----------------------------------------------------------------------
 hl.bind(modShift .. " + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | swappy -f -'))
 hl.bind(modShift .. " + A", hl.dsp.exec_cmd("grim - | swappy -f -"))
-hl.bind(modShift .. " + D", hl.dsp.exec_cmd("pkill -SIGUSR1 wayscriber"))
+hl.bind(modShift .. " + D", hl.dsp.exec_cmd("wayscriber --daemon-toggle"))
 
 ----------------------------------------------------------------------
 -- Quick web apps (Chrome PWA mode)
