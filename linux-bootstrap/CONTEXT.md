@@ -100,7 +100,7 @@ User-scoped work runs as the account passed through `--user`:
 - Building Paru and AUR packages
 - Stowing the public config and Git packages plus optional private Git identity
 - Installing Codex, Claude Code, and Fabric with their standalone upstream
-  installers, plus NVM, Node LTS, SDKMAN candidates, pipx tools, GitHub Copilot
+  installers, plus NVM, Node LTS, SDKMAN candidates, uv tools, GitHub Copilot
   CLI, and the pinned Herdr navigation plugin
 - Updating user directories and fonts
 
@@ -256,7 +256,7 @@ tuigreet login unlocks it automatically. KDE Wallet is not installed or needed.
 `linux-bootstrap/bootstrap.sh` is designed to be safe to rerun:
 
 - Pacman and Paru use `--needed`.
-- Existing users, Paru, SDKMAN, NVM, Codex, Claude Code, Fabric, pipx packages,
+- Existing users, Paru, SDKMAN, NVM, Codex, Claude Code, Fabric, uv tools,
   and user tools are detected.
 - The post-install helper reuses authenticated GitHub sessions and existing
   private checkouts, and skips Tailscale when it is already connected.

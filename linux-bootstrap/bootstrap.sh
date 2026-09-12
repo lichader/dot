@@ -447,12 +447,8 @@ install_user_tools() {
         fi
     done
 
-    for candidate in 'poetry' 'beancount==2.3.6' 'fava'; do
-        if ! as_target_user pipx list --short | awk '{print $1}' | grep -Fxq "${candidate%%==*}"; then
-            as_target_user pipx install "$candidate"
-        else
-            printf '  pipx package %s is already installed.\n' "${candidate%%==*}"
-        fi
+    for candidate in 'beancount==2.3.6' 'fava'; do
+        as_target_user uv tool install "$candidate"
     done
 
     as_target_user xdg-user-dirs-update

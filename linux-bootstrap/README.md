@@ -169,7 +169,7 @@ zramctl
 - Optional private Git identity and repository routing via a separate overlay
 - Herdr with the pinned Vim/Neovim pane-navigation plugin
 - Codex, Claude Code, and Fabric from their standalone upstream installers
-- NVM with the current Node LTS, SDKMAN with Java/Maven/Gradle, and pipx tools
+- NVM with the current Node LTS, SDKMAN with Java/Maven/Gradle, and uv tools
 
 `tailscaled.service` is enabled for the first boot, but joining the machine to
 a tailnet remains an interactive step performed by the post-install helper:

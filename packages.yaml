@@ -324,14 +324,6 @@ packages:
       brew:
         cask: [postman]
 
-  python-pipx:
-    type: cli
-    arch:
-      pacman: [python-pipx]
-    macos:
-      brew:
-        formula: [pipx]
-
   qbittorrent:
     type: app
     arch:
