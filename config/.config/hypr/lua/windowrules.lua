@@ -90,6 +90,7 @@ hl.window_rule({ match = { title = "^WeChat$", xwayland = true }, float = true }
 hl.window_rule({ match = { class = "^(wechat)$", title = "^(Photos and Videos)$" }, float = true })
 
 -- File managers
+hl.window_rule({ match = { class = "^(org.gnome.Nautilus)$" }, float = true })
 hl.window_rule({ match = { class = "^(thunar)$" }, float = true })
 hl.window_rule({ match = { class = "^(org.kde.dolphin)$" }, float = true })
 
