@@ -1,6 +1,10 @@
 [display]
 show_time = true
 
+[secret]
+mode = "characters"
+characters = "*"
+
 [remember]
 username = true
 user_session = true
