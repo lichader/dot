@@ -4,4 +4,6 @@
 /*.sock
 /plugins/
 /plugins.json
+/release-notes.json
+/session-snapshots/
 /session.json
