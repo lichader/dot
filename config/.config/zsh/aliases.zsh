@@ -49,6 +49,10 @@ alias ff=fastfetch
 alias cod='codex --yolo'
 alias cop='copilot --yolo'
 
+# =========== paru ===================
+alias psu='paru -Syu'
+alias psi='paru -S'
+
 # =========== java ===================
 alias grbr='gradle bootRun'
 alias grbt='gradle build'
