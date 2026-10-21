@@ -116,6 +116,7 @@ GUI_APPLICATION_PACKAGES=(
     gnome-calculator
     gnome-disk-utility
     gvfs-gphoto2
+    gvfs-mtp
     gvfs-smb
     loupe
     mtpfs
