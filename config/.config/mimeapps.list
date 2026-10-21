@@ -28,6 +28,7 @@ image/apng=org.gnome.Loupe.desktop
 image/avif=org.gnome.Loupe.desktop
 image/jxl=org.gnome.Loupe.desktop
 image/tiff=org.gnome.Loupe.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 
 [Added Associations]
 x-scheme-handler/http=zen.desktop;
