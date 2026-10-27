@@ -7,6 +7,7 @@ auto_switch = false
 [keys]
 prefix = "ctrl+b"
 new_tab = "prefix+c"
+previous_tab = "prefix+alt+p"
 rename_tab = "prefix+comma"
 navigate_workspace_down = "j"
 navigate_workspace_up = "k"
@@ -44,6 +45,14 @@ command = "lazygit"
 description = "open lazygit"
 width = "90%"
 height = "90%"
+
+[[keys.command]]
+key = "prefix+p"
+type = "popup"
+command = 'bash "$HOME/.config/herdr/promote-worktree.sh"'
+description = "promote spike to ticket branch"
+width = "70%"
+height = "40%"
 
 [ui]
 tab_bar_position = "bottom"
