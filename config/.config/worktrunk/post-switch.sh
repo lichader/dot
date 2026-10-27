@@ -31,7 +31,7 @@ OPEN_RESULT="$(herdr worktree open \
     --no-focus)"
 
 WORKSPACE_ID="$(jq -er '.result.workspace.workspace_id' <<<"$OPEN_RESULT")"
-CODE_TAB_ID="$(jq -er '.result.tab.tab_id' <<<"$OPEN_RESULT")"
+AI_TAB_ID="$(jq -er '.result.tab.tab_id' <<<"$OPEN_RESULT")"
 AI_PANE_ID="$(jq -er '.result.root_pane.pane_id' <<<"$OPEN_RESULT")"
 ALREADY_OPEN="$(jq -r '.result.already_open' <<<"$OPEN_RESULT")"
 
@@ -40,39 +40,24 @@ if [[ "$ALREADY_OPEN" == "true" ]]; then
     exit 0
 fi
 
-# Layout: Claude (left pane) | Neovim (right pane).
-herdr tab rename "$CODE_TAB_ID" code >/dev/null
+# Keep Claude in the first tab and Neovim in the second tab.
+herdr tab rename "$AI_TAB_ID" claude >/dev/null
 
-NVIM_RESULT="$(herdr pane split "$AI_PANE_ID" \
-    --direction right \
-    --cwd "$WORKTREE_PATH" \
-    --no-focus)"
-NVIM_PANE_ID="$(jq -er '.result.pane.pane_id' <<<"$NVIM_RESULT")"
-
-DATABASE_RESULT="$(herdr tab create \
+NVIM_RESULT="$(herdr tab create \
     --workspace "$WORKSPACE_ID" \
     --cwd "$WORKTREE_PATH" \
-    --label database \
+    --label editor \
     --no-focus)"
-DATABASE_PANE_ID="$(jq -er '.result.root_pane.pane_id' <<<"$DATABASE_RESULT")"
-
-MISC_RESULT="$(herdr tab create \
-    --workspace "$WORKSPACE_ID" \
-    --cwd "$WORKTREE_PATH" \
-    --label misc \
-    --no-focus)"
-MISC_PANE_ID="$(jq -er '.result.root_pane.pane_id' <<<"$MISC_RESULT")"
+NVIM_PANE_ID="$(jq -er '.result.root_pane.pane_id' <<<"$NVIM_RESULT")"
 
 herdr pane run "$AI_PANE_ID" claude >/dev/null
 herdr pane run "$NVIM_PANE_ID" nvim >/dev/null
-herdr pane run "$DATABASE_PANE_ID" "docker ps" >/dev/null
 
 if [[ -f "$WORKTREE_PATH/package.json" ]] && grep -q '"next"' "$WORKTREE_PATH/package.json"; then
     if [[ -f "$PRIMARY_WORKTREE_PATH/.env.local" ]]; then
         cp "$PRIMARY_WORKTREE_PATH/.env.local" "$WORKTREE_PATH/.env.local"
     fi
-    herdr pane run "$MISC_PANE_ID" "pnpm install && pnpm dev" >/dev/null
 fi
 
-# The no-focus creation calls leave the code tab and AI pane selected.
+# The no-focus creation calls leave the Claude tab and AI pane selected.
 herdr workspace focus "$WORKSPACE_ID" >/dev/null
