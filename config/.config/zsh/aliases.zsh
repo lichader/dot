@@ -113,6 +113,15 @@ alias grbr='gradle bootRun'
 alias grbt='gradle build'
 alias grbx='gradle build -x test'
 
+# Prefer the Maven wrapper in the current directory.
+function mvn() {
+	if [[ -f ./mvnw ]]; then
+		./mvnw "$@"
+	else
+		command mvn "$@"
+	fi
+}
+
 alias mvcc='mvn clean compile'
 alias mvct='mvn clean test'
 alias mvci='mvn clean install -U -DskipTests'
