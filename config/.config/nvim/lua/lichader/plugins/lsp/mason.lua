@@ -51,8 +51,7 @@ return {
             "markdownlint",
             -- python
             "pyright",
-            "black",
-            "flake8",
+            "ruff",
 
             -- lua
             "lua-language-server",

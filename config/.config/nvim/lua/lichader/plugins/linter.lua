@@ -14,8 +14,12 @@ return {
             terraform = { "tflint" },
             dockerfile = { "hadolint" },
             proto = { "protolint" },
-            python = { "flake8" },
+            python = { "ruff" },
         }
+
+        lint.linters.ruff.cmd = function()
+            return require("lichader.ruff").command(0)
+        end
 
         lint.linters.eslint_d.cmd = function()
             local local_eslint = vim.fn.findfile("node_modules/.bin/eslint", vim.fn.expand("%:p:h") .. ";")

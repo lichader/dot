@@ -29,11 +29,18 @@ return {
             json = { "fixjson" },
             graphql = { "prettier" },
             markdown = { "markdownlint" },
-            python = { "black" },
+            python = { "ruff_format" },
             -- NOTE: terraform
             terraform = { "terraform_fmt" },
             tf = { "terraform_fmt" },
             ["terraform-vars"] = { "terraform_fmt" },
+        },
+        formatters = {
+            ruff_format = {
+                command = function(_, ctx)
+                    return require("lichader.ruff").command(ctx.buf)
+                end,
+            },
         },
     },
 }
