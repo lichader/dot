@@ -316,14 +316,6 @@ packages:
       brew:
         formula: [poppler]
 
-  postman:
-    type: app
-    arch:
-      aur: [postman-bin]
-    macos:
-      brew:
-        cask: [postman]
-
   qbittorrent:
     type: app
     arch:
