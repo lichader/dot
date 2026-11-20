@@ -183,6 +183,48 @@ enable_daemon = true
 [shell]
 polkit_agent = true
 
+    [shell.launcher.dmenu.entry.webapp-chatgpt]
+    label = "ChatGPT"
+    global = true
+    glyph = "brand-openai"
+    command = "printf '%s\\n' ChatGPT"
+    exec = "google-chrome-stable --app=https://chatgpt.com/"
+
+    [shell.launcher.dmenu.entry.webapp-x]
+    label = "X (Twitter)"
+    global = true
+    glyph = "brand-x"
+    command = "printf '%s\\n' 'X (Twitter)'"
+    exec = "google-chrome-stable --app=https://x.com/home"
+
+    [shell.launcher.dmenu.entry.webapp-excalidraw]
+    label = "Excalidraw"
+    global = true
+    glyph = "pencil"
+    command = "printf '%s\\n' Excalidraw"
+    exec = "google-chrome-stable --app=https://excalidraw.com/"
+
+    [shell.launcher.dmenu.entry.webapp-rss]
+    label = "Miniflux"
+    global = true
+    glyph = "rss"
+    command = "printf '%s\\n' Miniflux"
+    exec = "google-chrome-stable --app=http://mynas.local:9070/unread"
+
+    [shell.launcher.dmenu.entry.webapp-youtube]
+    label = "YouTube"
+    global = true
+    glyph = "brand-youtube"
+    command = "printf '%s\\n' YouTube"
+    exec = "google-chrome-stable --app=https://www.youtube.com"
+
+    [shell.launcher.dmenu.entry.webapp-reddit]
+    label = "Reddit"
+    global = true
+    glyph = "brand-reddit"
+    command = "printf '%s\\n' Reddit"
+    exec = "google-chrome-stable --app=https://www.reddit.com/"
+
     [shell.screen_corners]
     enabled = true
 
