@@ -47,7 +47,7 @@ alias top=btop
 alias lg=lazygit
 alias ff=fastfetch
 alias cod='codex --yolo'
-alias cop='copilot --yolo'
+alias clap="CLAUDE_CONFIG_DIR=~/.claude-personal claude"
 
 # =========== git ====================
 # Common Oh My Zsh Git shortcuts
