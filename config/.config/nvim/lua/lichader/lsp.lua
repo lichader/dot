@@ -16,6 +16,19 @@ local servers = {
     "lua_ls",
 }
 
+vim.lsp.config("pyright", {
+    before_init = function(_, config)
+        local directory = config.root_dir or vim.fn.getcwd()
+        local python = vim.fs.joinpath(directory, ".venv", "bin", "python")
+
+        if vim.fn.executable(python) == 1 then
+            config.settings = config.settings or {}
+            config.settings.python = config.settings.python or {}
+            config.settings.python.pythonPath = python
+        end
+    end,
+})
+
 for _, server in ipairs(servers) do
     vim.lsp.enable(server)
 end
