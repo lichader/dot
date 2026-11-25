@@ -40,3 +40,23 @@ export PATH="$HOME/.local/bin:$PNPM_HOME:$CARGO_HOME/bin:$GOPATH/bin:$PATH"
 
 # --------- Starship -----
 export STARSHIP_CONFIG="$ZDOTDIR/starship.toml"
+
+# --------- gh --------
+# Use the personal GitHub account inside personal folders; elsewhere use the
+# account selected with `gh auth switch`.
+# Defined here rather than in aliases.zsh so non-interactive shells (scripts,
+# editor and agent tooling) get it too.
+GH_PERSONAL_USER='lichader'
+GH_PERSONAL_DIRS=("$HOME/Developer/rpeng" "$HOME/dot")
+
+function gh() {
+	local dir token
+	for dir in "${GH_PERSONAL_DIRS[@]}"; do
+		if [[ "$PWD/" == "$dir/"* ]]; then
+			token="$(command gh auth token --user "$GH_PERSONAL_USER")" || return
+			GH_TOKEN="$token" command gh "$@"
+			return
+		fi
+	done
+	command gh "$@"
+}
