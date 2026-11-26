@@ -447,6 +447,9 @@ install_user_tools() {
         fi
     done
 
+    # Switch JDKs automatically when entering a project with a .sdkmanrc.
+    as_target_user sed -i 's/^sdkman_auto_env=.*/sdkman_auto_env=true/' "$TARGET_HOME/.sdkman/etc/config"
+
     for candidate in 'beancount==2.3.6' 'fava'; do
         as_target_user uv tool install "$candidate"
     done
