@@ -35,8 +35,21 @@ export CARGO_HOME="$HOME/.cargo"
 
 export GOPATH="$HOME/go"
 
+# Android SDK (only where it is installed). AVD home is pinned because
+# XDG_CONFIG_HOME makes avdmanager write to ~/.config/.android/avd, while the
+# emulator only reads ~/.android/avd.
+if [[ -d "$HOME/Android/Sdk" ]]; then
+	export ANDROID_HOME="$HOME/Android/Sdk"
+	export ANDROID_AVD_HOME="$HOME/.android/avd"
+fi
+
 # --------- PATH -------
 export PATH="$HOME/.local/bin:$PNPM_HOME:$CARGO_HOME/bin:$GOPATH/bin:$PATH"
+# SDK platform-tools comes before /usr/bin so its adb wins over Arch's
+# android-tools adb; mixing the two makes them restart each other's server.
+if [[ -n "${ANDROID_HOME:-}" ]]; then
+	export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+fi
 
 # --------- Starship -----
 export STARSHIP_CONFIG="$ZDOTDIR/starship.toml"
