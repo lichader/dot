@@ -110,6 +110,31 @@ hl.window_rule({ match = { class = "^(org.telegram.desktop)$", title = "^(Media 
 -- toolbar and Extended Controls all float, whatever title they have at map time.
 hl.window_rule({ match = { class = "^(Emulator)$", xwayland = true }, float = true })
 
+-- The emulator opens its toolbar and Extended Controls a moment after the main
+-- window, so they land on whichever workspace is active by then. Move them to
+-- the workspace of the main window ("Android Emulator - <avd>:<port>") from the
+-- same process, so each emulator keeps its own windows together.
+hl.on("window.open", function(window)
+	if not window or window.class ~= "Emulator" or (window.title or ""):find("^Android Emulator") then
+		return
+	end
+
+	for _, main in ipairs(hl.get_windows({ class = "Emulator" })) do
+		if main.pid == window.pid and (main.title or ""):find("^Android Emulator") then
+			local target = main.workspace
+			local current = window.workspace
+			if target and not target.special and (not current or current.id ~= target.id) then
+				hl.dispatch(hl.dsp.window.move({
+					workspace = target.id,
+					follow = false,
+					window = "address:" .. window.address,
+				}))
+			end
+			return
+		end
+	end
+end)
+
 ----------------------------------------------------------------------
 -- Picture-in-Picture: top-right corner, pinned across workspaces.
 ----------------------------------------------------------------------
