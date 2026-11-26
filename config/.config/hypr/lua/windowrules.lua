@@ -106,6 +106,10 @@ hl.window_rule({ match = { class = "^(Fladder)$" }, float = true })
 
 hl.window_rule({ match = { class = "^(org.telegram.desktop)$", title = "^(Media viewer)" }, float = true })
 
+-- Android Emulator (xwayland). Matched on class so the main window, its side
+-- toolbar and Extended Controls all float, whatever title they have at map time.
+hl.window_rule({ match = { class = "^(Emulator)$", xwayland = true }, float = true })
+
 ----------------------------------------------------------------------
 -- Picture-in-Picture: top-right corner, pinned across workspaces.
 ----------------------------------------------------------------------
