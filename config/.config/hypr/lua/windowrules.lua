@@ -65,6 +65,11 @@ hl.window_rule({
 -- Keep the Obsidian web clipper able to surface the window.
 hl.window_rule({ match = { class = "^(md.obsidian.Obsidian)$" }, focus_on_activate = true })
 
+-- JetBrains IDEs (native Wayland) re-request focus for an open modal dialog
+-- whenever the main window gets focus. With the global focus_on_activate and
+-- cursor warps that becomes a focus loop that traps the cursor in the dialog.
+hl.window_rule({ match = { class = "^(jetbrains-.*)$" }, focus_on_activate = false })
+
 ----------------------------------------------------------------------
 -- Floating windows
 ----------------------------------------------------------------------
