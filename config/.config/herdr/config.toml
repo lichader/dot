@@ -47,6 +47,14 @@ width = "90%"
 height = "90%"
 
 [[keys.command]]
+key = "prefix+y"
+type = "popup"
+command = "yazi"
+description = "open yazi"
+width = "90%"
+height = "90%"
+
+[[keys.command]]
 key = "prefix+p"
 type = "popup"
 command = 'bash "$HOME/.config/herdr/promote-worktree.sh"'
